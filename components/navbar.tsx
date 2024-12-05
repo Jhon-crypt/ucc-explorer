@@ -18,9 +18,9 @@ export function Navbar() {
 
   return (
     <nav className="border-b bg-card dark:bg-slate-900 lg:text-[16px] md:text-xs text-xs ">
-      <div className="flex h-16 items-center justify-between px-4 container mx-auto">
+      <div className="flex h-16 items-center justify-between px-4 gap-1 container mx-auto">
         {/* Logo */}
-        <Link href="/" className="flex items-center space-x-2">
+        <Link href="/" className="flex items-center space-x-2 gap-2">
           <div className="flex items-center space-x-1">
             <Image
               src="/images/Vector.png"
@@ -30,8 +30,8 @@ export function Navbar() {
             />
             <span className="font-bold text-xl">UCCASH</span>
           </div>
-          <div className="hidden lg:block py-2 px-3 rounded-md bg-[#F8F8F8]">
-            <span className="lg:text-[16px] md:text-xs text-xs  text-muted-foreground">
+          <div className="hidden  lg:block py-2 px-3 rounded-md bg-[#F8F8F8]">
+            <span className="lg:text-[10px] md:text-xs text-xs  text-muted-foreground">
               UCC Price: $583.93{" "}
               <span className="text-uccash-green">(+0.38%)</span>{" "}
               <span className="opacity-50">|</span> Gas: 1 GWei

@@ -92,8 +92,8 @@ export function BalanceCard({ balance }: BalanceCardProps) {
                       <div key={i} className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <Image
-                            src={`/token-logos/${token.symbol.toLowerCase()}.png`}
-                            alt={token.symbol}
+                            src={``}
+                            alt={''}
                             width={20}
                             height={20}
                             className="rounded-full"

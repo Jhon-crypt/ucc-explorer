@@ -79,8 +79,8 @@ export function LatestTransactions() {
 
                 </div>
               </div>
-              <div className="text-right border border-input p-2 rounded-lg">
-                <div className="text-sm font-light">{tx.value}</div>
+              <div className="text-right border w-full border-input p-2 rounded-lg">
+                <div className="text-xs lg:text-xs w-full">{tx.value}</div>
               </div>
             </div>
           ))}

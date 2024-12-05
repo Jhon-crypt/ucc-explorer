@@ -29,15 +29,12 @@ export function AddressTransactions({ address }: AddressTransactionsProps) {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-col md:flex-row items-start md:items-center gap-2justify-between mb-4">
         <div className="text-sm text-muted-foreground">
           Latest 23 from a total of 23 transactions
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">
-            <Filter className="h-4 w-4 mr-2" />
-            Advanced Filter
-          </Button>
+        <div className="flex items-start gap-2">
+          
           <Button variant="outline" size="sm">
             <Download className="h-4 w-4 mr-2" />
             Download Page Data
