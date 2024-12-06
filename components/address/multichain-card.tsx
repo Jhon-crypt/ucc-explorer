@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card"
 
 export function MultichainCard() {
   return (
-    <Card className="p-6">
+    <Card className="p-6 w-full">
       <h3 className="text-base font-semibold mb-6">Multichain Info</h3>
       <div>
         <div className="flex items-center justify-between mb-4">

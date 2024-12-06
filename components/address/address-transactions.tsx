@@ -1,6 +1,6 @@
 "use client"
 
-import { Download, Filter } from "lucide-react"
+import { Download, ArrowDownWideNarrow, Copy } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Table,
@@ -29,8 +29,9 @@ export function AddressTransactions({ address }: AddressTransactionsProps) {
 
   return (
     <div>
-      <div className="flex flex-col md:flex-row items-start md:items-center gap-2justify-between mb-4">
-        <div className="text-sm text-muted-foreground">
+      <div className="flex flex-col md:flex-row items-start md:items-center gap-2 justify-between mb-4">
+        <div className="flex hap-2 text-sm text-muted-foreground">
+          <ArrowDownWideNarrow className="h-4 w-4 mr-2" />
           Latest 23 from a total of 23 transactions
         </div>
         <div className="flex items-start gap-2">
@@ -43,9 +44,9 @@ export function AddressTransactions({ address }: AddressTransactionsProps) {
       </div>
 
       <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Transaction Hash</TableHead>
+        <TableHeader className="">
+          <TableRow className="!font-bold">
+            <TableHead >Transaction Hash</TableHead>
             <TableHead>Method</TableHead>
             <TableHead>Block</TableHead>
             <TableHead>Age</TableHead>
@@ -59,8 +60,9 @@ export function AddressTransactions({ address }: AddressTransactionsProps) {
           {transactions.map((tx, i) => (
             <TableRow key={i}>
               <TableCell className="font-medium">
-                <Button variant="link" className="p-0 h-auto font-normal">
+                <Button variant="link" className="p-0 h-auto font-normal flex gap-2 ">
                   {tx.hash}
+                  <Copy className="h-3 w-3 text-gray-400" />
                 </Button>
               </TableCell>
               <TableCell>{tx.method}</TableCell>

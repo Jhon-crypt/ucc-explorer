@@ -20,7 +20,7 @@ interface InfoCardProps {
 
 export function InfoCard({ info }: InfoCardProps) {
   return (
-    <Card className="p-6 overflow-auto">
+    <Card className="p-6 overflow-auto w-full">
       <h3 className="text-base font-semibold mb-6">More Info</h3>
       <div className="space-y-6">
         <div>

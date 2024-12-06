@@ -84,7 +84,7 @@ export function LatestTransactions() {
               </div>
 
               {/* Transaction Value */}
-              <div className="text-right border w-full md:w-auto border-input p-2 rounded-lg">
+              <div className="text-right border md:w-auto border-input p-2 rounded-lg">
                 <div className="text-xs">{tx.value}</div>
               </div>
             </div>

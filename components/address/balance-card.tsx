@@ -35,8 +35,8 @@ export function BalanceCard({ balance }: BalanceCardProps) {
   )
 
   return (
-    <Card className="p-6">
-      <h3 className="text-xl font-semibold mb-6">Overview</h3>
+    <Card className="p-6 w-full">
+      <h6 className="text-base font-semibold mb-6">Overview</h6>
 
       <div className="space-y-6">
         <div>
@@ -49,12 +49,12 @@ export function BalanceCard({ balance }: BalanceCardProps) {
               height={24}
               className="rounded-full"
             />
-            <span className="text-lg">{balance.bnb} BNB</span>
+            <span className="text-lg mr-1">{balance.bnb} BNB</span>
           </div>
         </div>
 
         <div>
-          <div className="text-sm text-gray-500 mb-2">BNB VALUE</div>
+          <div className="text-sm text-gray-500 mb-2 ">BNB VALUE</div>
           <div className="text-lg">${balance.value.toFixed(2)}</div>
         </div>
 
@@ -69,11 +69,15 @@ export function BalanceCard({ balance }: BalanceCardProps) {
               >
                 <span>${balance.value.toFixed(2)} ({balance.tokens.length} Tokens)</span>
                 <ChevronDown className={cn(
-                  "h-4 w-4 transition-transform",
+                  "h-4 w-4 transition-transform ",
                   isDropdownOpen && "transform rotate-180"
                 )} />
               </Button>
-              <Wallet className="h-4 w-4 text-muted-foreground cursor-pointer hover:text-foreground" />
+              <div className= "p-2 rounded bg-border">
+              <Wallet className="h-4 w-4 rounded bg-borderx text-black cursor-pointer hover:text-foreground" />
+              </div>
+            
+              
             </div>
             {isDropdownOpen && (
               <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg border shadow-lg z-50">

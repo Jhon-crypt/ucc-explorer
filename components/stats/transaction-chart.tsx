@@ -12,7 +12,7 @@ interface TransactionChartProps {
 
 export function TransactionChart({ data }: TransactionChartProps) {
   return (
-    <div className="bg-card p-4 h-fit">
+    <div className="bg-card p-4 h-fit rounded-lg">
       <div className="text-sm text-muted-foreground opacity-50 mb-4">
         UCC SMART CHAIN TRANSACTION HISTORY IN 14 DAYS
       </div>

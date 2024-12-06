@@ -30,7 +30,7 @@ export default function RootLayout({
           <QueryProvider>
             <div className="min-h-screen bg-background flex flex-col">
               <Navbar />
-              <main className="flex-1 pb-8">{children}</main>
+              <main className="flex-1ß pb-8">{children}</main>
               <Footer />
             </div>
           </QueryProvider>

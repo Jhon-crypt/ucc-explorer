@@ -18,12 +18,6 @@ export function AddressHeader({ address }: AddressHeaderProps) {
           <Copy className="h-4 w-4" />
         </Button>
       </div>
-      
-      <div className="flex gap-2">
-        <Button className="bg-primary font-light" size="sm">Buy</Button>
-        <Button className="bg-primary font-light" size="sm">Play</Button>
-        <Button className="bg-primary font-light" size="sm">Gaming</Button>
-      </div>
     </div>
   )
 }

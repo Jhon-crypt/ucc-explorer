@@ -20,17 +20,19 @@ export function AddressPageContent({ address }: { address: string }) {
 
             <div className="px-4 md:px-6">
                 <AddressOverview address={address} />
-                <div className="rounded-lg bg-card shadow-sm mt-6 border-input p-3 overflow-auto">
+                <div className=" overflow-auto">
                     <Tabs defaultValue="transactions" className="mt-8">
                         {/* Tabs Header */}
-                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                            <TabsList className="flex overflow-x-auto scrollbar-hide">
-                                <TabsTrigger value="transactions">Transactions</TabsTrigger>
-                                <TabsTrigger value="internal">Internal Transactions</TabsTrigger>
-                                <TabsTrigger value="token-transfers">Token Transfers (BEP-20)</TabsTrigger>
-                                <TabsTrigger value="analytics">Analytics</TabsTrigger>
-                                <TabsTrigger value="multichain">Multichain Portfolio</TabsTrigger>
-                            </TabsList>
+                        <div className="flex flex-col lg:flex-row justify-start gap-y-4 lg:justify-between items-start">
+                            <div className="flex overflow-x-auto scrollbar-hide">
+                                <TabsList className="">
+                                    <TabsTrigger className= "bg-input font-bold" value="transactions">Transactions</TabsTrigger>
+                                    <TabsTrigger className= "bg-input font-bold" value="internal">Internal Transactions</TabsTrigger>
+                                    <TabsTrigger className= "bg-input font-bold" value="token-transfers">Token Transfers (BEP-20)</TabsTrigger>
+                                    <TabsTrigger className= "bg-input font-bold" value="analytics">Analytics</TabsTrigger>
+                                    <TabsTrigger className= "bg-input font-bold" value="multichain">Multichain Portfolio</TabsTrigger>
+                                </TabsList>
+                            </div>
                             <Button variant="outline" size="sm" className="shrink-0">
                                 <Filter className="h-4 w-4 mr-2" />
                                 Advanced Filter
@@ -38,10 +40,10 @@ export function AddressPageContent({ address }: { address: string }) {
                         </div>
 
                         {/* Tabs Content */}
-                        <TabsContent value="transactions" className="mt-6">
+                        <TabsContent value="transactions" className=" rounded-lg bg-card shadow-sm mt-4 border border-border p-3">
                             <AddressTransactions address={address} />
                         </TabsContent>
-                        <TabsContent value="token-transfers" className="mt-6">
+                        <TabsContent value="token-transfers" className="rounded-lg bg-card shadow-sm mt-4 border border-border p-3">
                             <TokenTransfers address={address} />
                         </TabsContent>
                     </Tabs>

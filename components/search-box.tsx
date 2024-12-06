@@ -20,10 +20,10 @@ export function SearchBox() {
   };
 
   return (
-    <div className="relative flex items-center w-full bg-yellow-500 rounded-lg shadow-md p-2">
+    <div className="relative flex items-center w-full bg-yellow-500 rounded-lg shadow-md p-0.5">
       {/* Filter Dropdown */}
       <div className="bg-white relative flex items-center w-full p-1 rounded-lg">
-        <div className="relative flex flex-grow w-32">
+        {/* <div className="relative flex flex-grow w-32">
           <button
             onClick={toggleDropdown}
             className="flex items-center gap-2 px-4 py-2 text-xs font-light text-black bg-white rounded-l-md focus:outline-none"
@@ -44,7 +44,7 @@ export function SearchBox() {
               ))}
             </div>
           )}
-        </div>
+        </div> */}
 
         {/* Search Bar */}
         <Input

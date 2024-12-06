@@ -54,10 +54,17 @@ export function AddressOverview({ address }: AddressOverviewProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <BalanceCard balance={mockData.balance} />
-      <InfoCard info={mockData.info} />
-      <MultichainCard />
+    <div className="flex flex-col lg:flex-row gap-6">
+      <div className="flex gap-6 flex-col md:flex-row lg:gap-6 w-full lg:w-2/3">
+        <BalanceCard balance={mockData.balance} />
+        <InfoCard info={mockData.info} />
+      </div>
+
+      <div className="flex w-full lg:w-1/3">
+        <MultichainCard />
+      </div>
+
+
     </div>
   )
 }
