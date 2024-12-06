@@ -12,7 +12,7 @@ export function AddressPageContent({ address }: { address: string }) {
     return (
         <div className="container-fluid mx-auto overflow-auto">
             <div className="bg-card w-full py-6 shadow-sm mb-6">
-                <div className="w-[60%] px-6">
+                <div className="w-full md:w-[60%] px-6">
                     <SearchBox />
                 </div>
             </div>

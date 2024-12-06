@@ -33,7 +33,7 @@ const footerLinks = {
 
 export function FooterLinks() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-8 w-full">
       {Object.entries(footerLinks).map(([key, section]) => (
         <div key={key}>
           <h3 className="font-semibold mb-4">{section.title}</h3>

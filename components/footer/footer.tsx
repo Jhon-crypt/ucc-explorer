@@ -22,8 +22,8 @@ export function Footer() {
         <div className="min-h-[1px] bg-[#D9D9D9] mb-12"></div>
 
         {/* Main Footer Content */}
-        <div className="flex w-full gap-6 mb-12">
-          <div className="w-[40%] ">
+        <div className="flex w-full md:flex-row flex-col gap-6 mb-12">
+          <div className="w-full md:w-[40%] ">
             <h2 className="text-xl font-medium mb-2">Powered by Universe Chain</h2>
             <p className="text-muted mb-4 text-sm font-light">
               BscScan is a Block Explorer and Analytics Platform for Universe Chain.
@@ -34,7 +34,7 @@ export function Footer() {
             </Button>
           </div>
           {/* Footer Links Grid */}
-          <div className="w-[60%]">
+          <div className="md:w-[60%] w-full">
             <FooterLinks />
           </div>
         </div>

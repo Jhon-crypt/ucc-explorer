@@ -65,7 +65,7 @@ export function LatestBlocks() {
               </div>
 
               {/* Validator and Transactions */}
-              <div className="text-sm text-muted-foreground w-full md:w-auto">
+              <div className="text-sm w-full text-muted-foreground w-full md:w-auto">
                 <div>
                   <span className="opacity-50">Validated By </span>
                   <Link
@@ -82,8 +82,8 @@ export function LatestBlocks() {
               </div>
 
               {/* Reward */}
-              <div className="text-right border border-input p-2 rounded-lg md:w-auto">
-                <div className="text-sm font-light">{block.reward}</div>
+              <div className="text-right border w-fit border-input p-2 rounded-lg w-fit">
+                <div className="text-sm w-fit font-light">{block.reward}</div>
               </div>
             </div>
           ))}
