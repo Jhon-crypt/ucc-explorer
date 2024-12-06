@@ -41,8 +41,8 @@ export function TokenTransfers({ address }: TokenTransfersProps) {
       method: "Transfer",
       block: "30010385",
       age: "507 days ago",
-      from: "0xFD8893BA...505Bd90D1",
-      to: "0x7f2CA115...ba28237d9",
+      from: "0xa1b2c3d4e5f6789",
+      to: "0xdeadbeefdeadbeef",
       amount: "200",
       token: {
         symbol: "S39",
@@ -56,8 +56,8 @@ export function TokenTransfers({ address }: TokenTransfersProps) {
       method: "Transfer",
       block: "30010385",
       age: "507 days ago",
-      from: "0xFD8893BA...505Bd90D1",
-      to: "0x7f2CA115...ba28237d9",
+      from: "0xa1b2c3d4e5f6789",
+      to: "0xdeadbeefdeadbeef",
       amount: "200",
       token: {
         symbol: "S39",
