@@ -4,7 +4,6 @@ interface AddressPageProps {
   params: Promise<{ address: string }>;
 }
 
-// Generate static params for dynamic routing
 export async function generateStaticParams() {
   const addresses = [
     "0x123456789abcdef",
@@ -15,7 +14,6 @@ export async function generateStaticParams() {
   return addresses.map((address) => ({ address }));
 }
 
-// Define the dynamic route page component
 export default async function AddressPage({ params }: AddressPageProps) {
   const resolvedParams = await params; 
   return <AddressPageContent address={resolvedParams.address} />;
