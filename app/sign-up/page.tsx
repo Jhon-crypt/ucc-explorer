@@ -141,7 +141,7 @@ export default function SignUpPage() {
                 <Checkbox id="terms" required />
                 <label htmlFor="terms" className="text-sm">
                   I agree to the{" "}
-                  <Link href="/terms" className="text-primary hover:underline">
+                  <Link href="/#" className="text-primary hover:underline">
                     Terms and Conditions
                   </Link>
                   .
@@ -152,7 +152,7 @@ export default function SignUpPage() {
                 <Checkbox id="newsletter" />
                 <label htmlFor="newsletter" className="text-sm">
                   I would like to receive the BscScan newsletter and understand that I can{" "}
-                  <Link href="/unsubscribe" className="text-primary hover:underline">
+                  <Link href="/#" className="text-primary hover:underline">
                     unsubscribe
                   </Link>{" "}
                   at any time.

@@ -46,12 +46,12 @@ export default function SignInPage() {
                 <label htmlFor="password" className="text-sm font-medium">
                   Password
                 </label>
-                <Link
+                {/* <Link
                   href="/forgot-password"
                   className="text-sm text-primary hover:underline"
                 >
                   Forgot your password?
-                </Link>
+                </Link> */}
               </div>
               <div className="relative">
                 <Input

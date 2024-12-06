@@ -26,7 +26,7 @@ export function SearchBox() {
         <div className="relative flex flex-grow w-32">
           <button
             onClick={toggleDropdown}
-            className="flex items-center gap-2 px-4 py-2 text-xs font-light text-black bg-card rounded-l-md focus:outline-none"
+            className="flex items-center gap-2 px-4 py-2 text-xs font-light text-black bg-white rounded-l-md focus:outline-none"
           >
             {selectedFilter} <span className="rotate-(-90)">&#9662;</span>
           </button>

@@ -40,23 +40,23 @@ export function Navbar() {
         </Link>
 
         {/* Desktop Links */}
-        <div className="hidden md:flex items-center space-x-6">
-          <Link href="/" className="lg:text-[16px] md:text-xs text-xs  font-medium hover:text-primary">
+        <div className="hidden md:flex items-center space-x-3 lg:space-x-6">
+          <Link href="/" className="lg:text-[16px] md:text-[10px] text-xs  font-medium hover:text-primary">
             Home
           </Link>
-          <Link href="/#" className="lg:text-[16px] md:text-xs text-xs  font-medium hover:text-primary">
+          <Link href="/#" className="lg:text-[16px] md:text-[10px] text-xs  font-medium hover:text-primary">
             Universechain
           </Link>
-          <Link href="/#" className="lg:text-[16px] md:text-xs text-xs  font-medium hover:text-primary">
+          <Link href="/#" className="lg:text-[16px] md:text-[10px] text-xs  font-medium hover:text-primary">
             Tokens
           </Link>
-          <Link href="#" className="lg:text-[16px] md:text-xs text-xs  font-medium hover:text-primary">
+          <Link href="#" className="lg:text-[16px] md:text-[10px] text-xs  font-medium hover:text-primary">
             NFTs
           </Link>
-          <Link href="#" className="lg:text-[16px] md:text-xs text-xs  font-medium hover:text-primary">
+          <Link href="#" className="lg:text-[16px] md:text-[10px] text-xs  font-medium hover:text-primary">
             Resources
           </Link>
-          <Link href="/#" className="lg:text-[16px] md:text-xs text-xs  font-medium hover:text-primary">
+          <Link href="/#" className="lg:text-[16px] md:text-[10px] text-xs  font-medium hover:text-primary">
             Developers
           </Link>
         </div>
@@ -69,52 +69,52 @@ export function Navbar() {
           <span className="sr-only">Open menu</span>
           <div className="space-y-2">
             <div
-              className={`w-8 h-0.5 bg-current transform transition-transform duration-500 ${
-                isMenuOpen ? "rotate-45 translate-y-2" : ""
-              }`}
+              className={`w-8 h-0.5 bg-current transform transition-transform duration-500 ${isMenuOpen ? "rotate-45 translate-y-2" : ""
+                }`}
             />
             <div
-              className={`w-8 h-0.5 bg-current transition-opacity duration-500 ${
-                isMenuOpen ? "opacity-0" : "opacity-100"
-              }`}
+              className={`w-8 h-0.5 bg-current transition-opacity duration-500 ${isMenuOpen ? "opacity-0" : "opacity-100"
+                }`}
             />
             <div
-              className={`w-8 h-0.5 bg-current transform transition-transform duration-500 ${
-                isMenuOpen ? "-rotate-45 -translate-y-2" : ""
-              }`}
+              className={`w-8 h-0.5 bg-current transform transition-transform duration-500 ${isMenuOpen ? "-rotate-45 -translate-y-2" : ""
+                }`}
             />
           </div>
         </button>
 
         {/* Actions */}
         <div className="hidden md:flex items-center space-x-6">
-          <Button variant="destructive" size="sm">
-            Sign up
-          </Button>
-          <Button variant="destructive" size="sm">Log in</Button>
+        <Link
+            href="/sign-up">
+            <Button variant="destructive" size="sm">
+              Sign up
+            </Button>
+          </Link>
+          <Link
+            href="/sign-in">
+            <Button variant="destructive" size="sm">Log in</Button>
+          </Link>
 
-          
+
           <div
             onClick={toggleTheme}
             className="relative flex items-center w-16 h-8 bg-yellow-500 dark:bg-gray-700 rounded-full cursor-pointer p-1"
           >
             {/* Circle */}
             <div
-              className={`absolute w-6 h-6 bg-card rounded-full shadow-md transition-transform transform duration-300 ${
-                theme === "dark" ? "translate-x-8" : "translate-x-0"
-              }`}
+              className={`absolute w-6 h-6 bg-card rounded-full shadow-md transition-transform transform duration-300 ${theme === "dark" ? "translate-x-8" : "translate-x-0"
+                }`}
             ></div>
 
             {/* Icons */}
             <Sun
-              className={`absolute left-2 w-4 h-4 text-white transition-opacity duration-300 ${
-                theme === "dark" ? "opacity-0" : "opacity-100"
-              }`}
+              className={`absolute left-2 w-4 h-4 text-white transition-opacity duration-300 ${theme === "dark" ? "opacity-0" : "opacity-100"
+                }`}
             />
             <Moon
-              className={`absolute right-2 w-4 h-4 text-white transition-opacity duration-300 ${
-                theme === "dark" ? "opacity-100" : "opacity-0"
-              }`}
+              className={`absolute right-2 w-4 h-4 text-white transition-opacity duration-300 ${theme === "dark" ? "opacity-100" : "opacity-0"
+                }`}
             />
           </div>
         </div>
@@ -122,9 +122,8 @@ export function Navbar() {
 
       {/* Mobile Menu Sliding Effect */}
       <div
-        className={`fixed inset-0 z-40 transform bg-card dark:bg-slate-900 transition-transform duration-500 ${
-          isMenuOpen ? "translate-x-0" : "-translate-x-full"
-        } md:hidden`}
+        className={`fixed inset-0 z-40 transform bg-card dark:bg-slate-900 transition-transform duration-500 ${isMenuOpen ? "translate-x-0" : "-translate-x-full"
+          } md:hidden`}
       >
         <div className="p-4">
           <Link
@@ -171,33 +170,35 @@ export function Navbar() {
           </Link>
         </div>
         <div className="flex p-6 bg-black md:flex items-center space-x-6">
-          <Button variant="outline" size="sm">
-            Sign up
-          </Button>
-          <Button size="sm">Log in</Button>
+          <Link
+            href="/sign-up">
+            <Button variant="outline" size="sm">
+              Sign up
+            </Button>
+          </Link>
+          <Link
+            href="/sign-in">
+            <Button size="sm">Log in</Button>
+          </Link>
 
-         
           <div
             onClick={toggleTheme}
             className="relative flex items-center w-16 h-8 bg-yellow-500 dark:bg-gray-700 rounded-full cursor-pointer p-1"
           >
             {/* Circle */}
             <div
-              className={`absolute w-6 h-6 bg-card rounded-full shadow-md transition-transform transform duration-300 ${
-                theme === "dark" ? "translate-x-8" : "translate-x-0"
-              }`}
+              className={`absolute w-6 h-6 bg-card rounded-full shadow-md transition-transform transform duration-300 ${theme === "dark" ? "translate-x-8" : "translate-x-0"
+                }`}
             ></div>
 
             {/* Icons */}
             <Sun
-              className={`absolute left-2 w-4 h-4 text-white transition-opacity duration-300 ${
-                theme === "dark" ? "opacity-0" : "opacity-100"
-              }`}
+              className={`absolute left-2 w-4 h-4 text-white transition-opacity duration-300 ${theme === "dark" ? "opacity-0" : "opacity-100"
+                }`}
             />
             <Moon
-              className={`absolute right-2 w-4 h-4 text-white transition-opacity duration-300 ${
-                theme === "dark" ? "opacity-100" : "opacity-0"
-              }`}
+              className={`absolute right-2 w-4 h-4 text-white transition-opacity duration-300 ${theme === "dark" ? "opacity-100" : "opacity-0"
+                }`}
             />
           </div>
         </div>
