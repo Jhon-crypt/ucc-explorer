@@ -26,11 +26,11 @@ export function AddressPageContent({ address }: { address: string }) {
                         <div className="flex flex-col lg:flex-row justify-start gap-y-4 lg:justify-between items-start">
                             <div className="flex overflow-x-auto scrollbar-hide">
                                 <TabsList className="">
-                                    <TabsTrigger className= "bg-input font-bold" value="transactions">Transactions</TabsTrigger>
-                                    <TabsTrigger className= "bg-input font-bold" value="internal">Internal Transactions</TabsTrigger>
-                                    <TabsTrigger className= "bg-input font-bold" value="token-transfers">Token Transfers (BEP-20)</TabsTrigger>
-                                    <TabsTrigger className= "bg-input font-bold" value="analytics">Analytics</TabsTrigger>
-                                    <TabsTrigger className= "bg-input font-bold" value="multichain">Multichain Portfolio</TabsTrigger>
+                                    <TabsTrigger className= "bg-input " value="transactions">Transactions</TabsTrigger>
+                                    <TabsTrigger className= "bg-input " value="internal">Internal Transactions</TabsTrigger>
+                                    <TabsTrigger className= "bg-input " value="token-transfers">Token Transfers (BEP-20)</TabsTrigger>
+                                    <TabsTrigger className= "bg-input " value="analytics">Analytics</TabsTrigger>
+                                    <TabsTrigger className= "bg-input " value="multichain">Multichain Portfolio</TabsTrigger>
                                 </TabsList>
                             </div>
                             <Button variant="outline" size="sm" className="shrink-0">
