@@ -1,6 +1,6 @@
 "use client"
 
-import { Download, Filter, Info, X, ExternalLink, Copy } from "lucide-react"
+import { Download, Filter, Info, X, ArrowDownWideNarrow, Copy, CircleHelp, Eye } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import {
@@ -69,35 +69,33 @@ export function TokenTransfers({ address }: TokenTransfersProps) {
   ]
 
   return (
-    <div className="space-y-4 border p-3 rounded-lg">
-      <Alert  className="bg-input">
-        <Info className="h-4 w-4 text-blue-500" />
-        <AlertDescription className="text-sm text-muted-foreground flex items-center justify-between">
-          <span>
-            Transactions involving tokens marked as suspicious, unsafe, spam or brand infringement are currently hidden. To show them, go to{" "}
-            <Link href="/settings" className="text-primary hover:underline">
-              Site Settings
-            </Link>
-            .
-          </span>
-          <Button variant="destructive" size="sm" className="text-muted-foreground h-auto p-0">
-            <X className="h-4 w-4" />
-          </Button>
-        </AlertDescription>
-      </Alert>
+    <div className="space-y-4 border rounded-lg">
+      <div className="p-3">
+        <Alert className="bg-input ">
+          <Info className="h-4 w-4 text-blue-500" />
+          <AlertDescription className="text-sm text-muted-foreground flex items-center justify-between ">
+            <span>
+              Transactions involving tokens marked as suspicious, unsafe, spam or brand infringement are currently hidden. To show them, go to{" "}
+              <Link href="/settings" className="text-primary hover:underline">
+                Site Settings
+              </Link>
+              .
+            </span>
+            <Button variant="destructive" size="sm" className="text-muted-foreground h-auto p-0">
+              <X className="h-4 w-4" />
+            </Button>
+          </AlertDescription>
+        </Alert>
+      </div>
 
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <ExternalLink className="h-4 w-4" />
-          <span className="text-sm font-medium">
-            Latest 12 BEP-20 Token Transfer Events
-          </span>
+
+      <div className="flex flex-col md:flex-row items-start md:items-center gap-2 justify-between mb-4 p-3">
+        <div className="flex hap-2 text-sm text-muted-foreground">
+          <ArrowDownWideNarrow className="h-4 w-4 mr-2" />
+          Latest 23 from a total of 23 transactions
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">
-            <Filter className="h-4 w-4 mr-2" />
-            Advanced Filter
-          </Button>
+        <div className="flex items-start gap-2">
+
           <Button variant="outline" size="sm">
             <Download className="h-4 w-4 mr-2" />
             Download Page Data
@@ -105,99 +103,99 @@ export function TokenTransfers({ address }: TokenTransfersProps) {
         </div>
       </div>
 
-      <div className="rounded-lg border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[20px]"></TableHead>
-              <TableHead>Transaction Hash</TableHead>
-              <TableHead>Method</TableHead>
-              <TableHead>Block</TableHead>
-              <TableHead>Age</TableHead>
-              <TableHead>From</TableHead>
-              <TableHead>To</TableHead>
-              <TableHead>Amount</TableHead>
-              <TableHead>Token</TableHead>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="flex gap-1 items-center">
+              <CircleHelp className="h-4 w-4 text-gray-400" />
+            </TableHead>
+            <TableHead>Transaction Hash</TableHead>
+            <TableHead>Method</TableHead>
+            <TableHead>Block</TableHead>
+            <TableHead>Age</TableHead>
+            <TableHead>From</TableHead>
+            <TableHead>To</TableHead>
+            <TableHead>Amount</TableHead>
+            <TableHead>Token</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {transfers.map((transfer, i) => (
+            <TableRow key={i}>
+              <TableCell className="font-medium !py-0">
+                <Button variant="link" className="p-2 border h-auto font-normal flex gap-2 ">
+                  <Eye className="h-3 w-3 text-gray-400" />
+                </Button>
+              </TableCell>
+              <TableCell className="font-medium !py-0">
+                <Link
+                  href={`/tx/${transfer.hash}`}
+                  className="text-blue-500 hover:text-blue-600"
+                >
+                  {transfer.hash}
+                </Link>
+              </TableCell>
+              <TableCell className="font-medium !py-0">
+                <span className="bg-gray-100 px-3 py-1 rounded-lg text-sm">
+                  {transfer.method}
+                </span>
+              </TableCell>
+              <TableCell className="font-medium !py-0">
+                <Link
+                  href={`/block/${transfer.block}`}
+                  className="text-blue-500 hover:text-blue-600"
+                >
+                  {transfer.block}
+                </Link>
+              </TableCell>
+              <TableCell className="font-medium !py-0">{transfer.age}</TableCell>
+              <TableCell className="font-medium !py-0">
+                <div className="flex items-center gap-2">
+                  <Link
+                    href={`/address/${transfer.from}`}
+                    className="text-blue-500 hover:text-blue-600"
+                  >
+                    {transfer.from}
+                  </Link>
+                  {transfer.type === "OUT" && (
+                    <span className="bg-orange-100 text-orange-700 px-2 py-0.5 rounded text-xs">
+                      OUT
+                    </span>
+                  )}
+                </div>
+              </TableCell>
+              <TableCell className="font-medium !py-0">
+                <div className="flex items-center gap-2">
+                  <Link
+                    href={`/address/${transfer.to}`}
+                    className="text-blue-500 hover:text-blue-600"
+                  >
+                    {transfer.to}
+                  </Link>
+                  {transfer.type === "IN" && (
+                    <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs">
+                      IN
+                    </span>
+                  )}
+                </div>
+              </TableCell>
+              <TableCell className="font-medium !py-0">{transfer.amount}</TableCell>
+              <TableCell className="font-medium !py-0">
+                <div className="flex items-center gap-2">
+                  <Image
+                    src={transfer.token.logo}
+                    alt={transfer.token.symbol}
+                    width={20}
+                    height={20}
+                    className="rounded-full"
+                  />
+                  <span>{transfer.token.symbol}</span>
+                </div>
+              </TableCell>
             </TableRow>
-          </TableHeader>
-          <TableBody>
-            {transfers.map((transfer, i) => (
-              <TableRow key={i}>
-                <TableCell>
-                  <Button variant="ghost" size="sm" className="h-4 w-4 p-0">
-                    <Copy className="h-3 w-3" />
-                  </Button>
-                </TableCell>
-                <TableCell>
-                  <Link 
-                    href={`/tx/${transfer.hash}`}
-                    className="text-blue-500 hover:text-blue-600"
-                  >
-                    {transfer.hash}
-                  </Link>
-                </TableCell>
-                <TableCell>
-                  <span className="bg-gray-100 px-3 py-1 rounded-full text-sm">
-                    {transfer.method}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <Link 
-                    href={`/block/${transfer.block}`}
-                    className="text-blue-500 hover:text-blue-600"
-                  >
-                    {transfer.block}
-                  </Link>
-                </TableCell>
-                <TableCell>{transfer.age}</TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <Link 
-                      href={`/address/${transfer.from}`}
-                      className="text-blue-500 hover:text-blue-600"
-                    >
-                      {transfer.from}
-                    </Link>
-                    {transfer.type === "OUT" && (
-                      <span className="bg-orange-100 text-orange-700 px-2 py-0.5 rounded text-xs">
-                        OUT
-                      </span>
-                    )}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <Link 
-                      href={`/address/${transfer.to}`}
-                      className="text-blue-500 hover:text-blue-600"
-                    >
-                      {transfer.to}
-                    </Link>
-                    {transfer.type === "IN" && (
-                      <span className="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs">
-                        IN
-                      </span>
-                    )}
-                  </div>
-                </TableCell>
-                <TableCell>{transfer.amount}</TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <Image
-                      src={transfer.token.logo}
-                      alt={transfer.token.symbol}
-                      width={20}
-                      height={20}
-                      className="rounded-full"
-                    />
-                    <span>{transfer.token.symbol}</span>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   )
 }
