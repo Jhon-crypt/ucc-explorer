@@ -89,7 +89,7 @@ export function BalanceCard({ balance }: BalanceCardProps) {
                     className="mb-4"
                   />
 
-                  <div className="font-medium mb-2">BEP-20 Tokens ({balance.tokens.length})</div>
+                  <div className="font-medium mb-2">UCC-20 Tokens ({balance.tokens.length})</div>
 
                   <div className="space-y-4 max-h-[300px] overflow-y-auto">
                     {filteredTokens.map((token, i) => (

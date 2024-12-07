@@ -34,7 +34,7 @@ export function AddressPageContent({ address }: { address: string }) {
                                         Internal Transactions
                                     </TabsTrigger>
                                     <TabsTrigger className="bg-input" value="token-transfers">
-                                        Token Transfers (BEP-20)
+                                        Token Transfers (UCC-20)
                                     </TabsTrigger>
                                     <TabsTrigger className="bg-input" value="analytics">
                                         Analytics

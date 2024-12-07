@@ -15,25 +15,25 @@ export function AddressOverview({ address }: AddressOverviewProps) {
       value: 0.00,
       tokens: [
         {
-          type: "BEP-20",
+          type: "UCC-20",
           name: "GOGAME",
           symbol: "GGO",
           amount: "200",
         },
         {
-          type: "BEP-20",
+          type: "UCC-20",
           name: "S39 Token",
           symbol: "S39",
           amount: "200",
         },
         {
-          type: "BEP-20",
+          type: "UCC-20",
           name: "ThankYou",
           symbol: "ThankY",
           amount: "90,000,000,000,000,000",
         },
         {
-          type: "BEP-20",
+          type: "UCC-20",
           name: "TOKEN",
           symbol: "TOKEN",
           amount: "298,222.198686",
