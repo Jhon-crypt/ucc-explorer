@@ -47,7 +47,7 @@ export function LatestTransactions() {
             >
               {/* Transaction Hash */}
               <div className="flex items-center gap-3">
-                <div className="rounded-md bg-background p-2">
+                <div className="rounded-md bg-border p-2">
                   <FileText className="h-6 w-6 text-muted" />
                 </div>
                 <div>
