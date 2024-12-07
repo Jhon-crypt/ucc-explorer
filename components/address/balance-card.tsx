@@ -43,7 +43,7 @@ export function BalanceCard({ balance }: BalanceCardProps) {
           <div className="text-sm text-gray-500 mb-2">UCC BALANCE</div>
           <div className="flex items-center gap-2">
             <Image
-              src="/icon.png"
+              src="/images/icon.png"
               alt="UCC"
               width={24}
               height={24}
