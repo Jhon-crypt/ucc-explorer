@@ -14,7 +14,7 @@ export function ChainStats() {
         btcValue: 0.008701,
         priceChange: "+0.39%",
         marketCap: 86504593753.00,
-        marketCapBnb: 142142881,
+        marketCapUcc: 142142881,
         transactions: 6311.23,
         tps: 42.0,
         gasPrice: 1,

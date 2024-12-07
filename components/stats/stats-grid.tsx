@@ -10,7 +10,7 @@ interface StatsGridProps {
     btcValue: number
     priceChange: string
     marketCap: number
-    marketCapBnb: number
+    marketCapUcc: number
     transactions: number
     tps: number
     gasPrice: number
@@ -59,7 +59,7 @@ export function StatsGrid({ stats }: StatsGridProps) {
             <div className="text-muted-foreground opacity-50">UCC MARKET CAP ON UCC</div>
             <div className="flex gap-1">${formatNumber(stats.marketCap)}
               <div className="lg:text-sm text-xs text-muted-foreground opacity-50">
-                ({formatNumber(stats.marketCapBnb)} BNB)
+                ({formatNumber(stats.marketCapUcc)} UCC)
               </div>
             </div>
           </div>
@@ -118,7 +118,7 @@ export function StatsGrid({ stats }: StatsGridProps) {
           <div className="flex gap-2 justify-end bg-card  p-4">
             <div className="lg:text-sm text-xs flex flex-col gap-1">
               <div className="text-muted-foreground opacity-50">VOTING POWER</div>
-              <div className="flex gap-1">{formatNumber(stats.votingPower)} BNB
+              <div className="flex gap-1">{formatNumber(stats.votingPower)} UCC
 
               </div>
             </div>

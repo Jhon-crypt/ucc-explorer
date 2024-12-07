@@ -19,7 +19,7 @@ interface Token {
 
 interface BalanceCardProps {
   balance: {
-    bnb: number
+    ucc: number
     value: number
     tokens: Token[]
   }
@@ -40,21 +40,21 @@ export function BalanceCard({ balance }: BalanceCardProps) {
 
       <div className="space-y-6">
         <div>
-          <div className="text-sm text-gray-500 mb-2">BNB BALANCE</div>
+          <div className="text-sm text-gray-500 mb-2">UCC BALANCE</div>
           <div className="flex items-center gap-2">
             <Image
-              src="/bnb-logo.png"
-              alt="BNB"
+              src="/icon.png"
+              alt="UCC"
               width={24}
               height={24}
               className="rounded-full"
             />
-            <span className="text-lg mr-1">{balance.bnb} BNB</span>
+            <span className="text-lg mr-1">{balance.ucc} UCC</span>
           </div>
         </div>
 
         <div>
-          <div className="text-sm text-gray-500 mb-2 ">BNB VALUE</div>
+          <div className="text-sm text-gray-500 mb-2 ">UCC VALUE</div>
           <div className="text-lg">${balance.value.toFixed(2)}</div>
         </div>
 

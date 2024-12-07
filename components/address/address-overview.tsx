@@ -11,7 +11,7 @@ interface AddressOverviewProps {
 export function AddressOverview({ address }: AddressOverviewProps) {
   const mockData = {
     balance: {
-      bnb: 0,
+      ucc: 0,
       value: 0.00,
       tokens: [
         {
