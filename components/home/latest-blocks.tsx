@@ -48,7 +48,7 @@ export function LatestBlocks() {
             >
               {/* Block Details */}
               <div className="flex items-center gap-3 w-full md:w-auto">
-                <div className="rounded-md bg-border p-2">
+                <div className="rounded-md bg-background p-2">
                   <Box className="h-6 w-6 text-muted" />
                 </div>
                 <div>
