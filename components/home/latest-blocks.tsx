@@ -11,23 +11,27 @@ interface Block {
   validator: string;
   txns: number;
   time: string;
-  reward: string;
 }
 
 export function LatestBlocks() {
   const { data: blocks } = useQuery<Block[]>({
     queryKey: ["latest-blocks"],
     queryFn: async () => {
-      // Mock data - Will be replaced with actual API call
-      return Array(6)
-        .fill(null)
-        .map((_, i) => ({
-          height: "43477480",
-          validator: "0x123456789abcdef",
-          txns: 118,
-          time: "5 secs ago",
-          reward: "0.01189 UCC",
-        }));
+      // Fetch latest block info from the endpoint
+      const response = await fetch('http://145.223.80.193:26657/status');
+      const data = await response.json();
+      
+      // Create a block entry from the latest block info
+      const latestBlockTime = new Date(data.result.sync_info.latest_block_time);
+      const timeAgo = Math.floor((Date.now() - latestBlockTime.getTime()) / 1000);
+      const timeString = timeAgo < 60 ? `${timeAgo} secs ago` : `${Math.floor(timeAgo / 60)} mins ago`;
+      
+      return [{
+        height: data.result.sync_info.latest_block_height,
+        validator: data.result.validator_info.address,
+        txns: 0, // This information is not available in the status endpoint
+        time: timeString,
+      }];
     },
   });
 
@@ -79,11 +83,6 @@ export function LatestBlocks() {
                   <span className="text-primary">{block.txns} </span>
                   <span className="opacity-50">txns in 3 secs</span>
                 </div>
-              </div>
-
-              {/* Reward */}
-              <div className="text-right border w-fit border-input p-2 rounded-lg w-fit">
-                <div className="text-sm w-fit font-light">{block.reward}</div>
               </div>
             </div>
           ))}

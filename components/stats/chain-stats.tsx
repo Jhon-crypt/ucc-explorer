@@ -8,7 +8,15 @@ export function ChainStats() {
   const { data: stats } = useQuery({
     queryKey: ["chainStats"],
     queryFn: async () => {
-      // Implement API call here
+      // Fetch latest block info from the endpoint
+      const response = await fetch('http://145.223.80.193:26657/status');
+      const data = await response.json();
+      
+      // Extract block information
+      const latestBlock = parseInt(data.result.sync_info.latest_block_height);
+      const latestBlockTime = new Date(data.result.sync_info.latest_block_time);
+      const blockTime = ((Date.now() - latestBlockTime.getTime()) / 1000).toFixed(1);
+      
       return {
         price: 583.93,
         btcValue: 0.008701,
@@ -19,8 +27,8 @@ export function ChainStats() {
         tps: 42.0,
         gasPrice: 1,
         gasPriceUsd: 0.01,
-        latestBlock: 43477480,
-        blockTime: 3.0,
+        latestBlock,
+        blockTime: parseFloat(blockTime),
         votingPower: 97966371.95,
         chartData: Array.from({ length: 30 }, (_, i) => ({
           date: new Date(Date.now() - (30 - i) * 24 * 60 * 60 * 1000),
