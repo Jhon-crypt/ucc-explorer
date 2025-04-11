@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Box } from "lucide-react";
+import { Box, Info } from "lucide-react";
 import Link from "next/link";
 
 interface Block {
@@ -13,79 +13,166 @@ interface Block {
   time: string;
 }
 
+interface NodeInfo {
+  moniker: string;
+  network: string;
+  version: string;
+  appName: string;
+  appVersion: string;
+}
+
 export function LatestBlocks() {
-  const { data: blocks } = useQuery<Block[]>({
+  // Fetch node info
+  const { data: nodeInfo } = useQuery<NodeInfo>({
+    queryKey: ["node-info"],
+    queryFn: async () => {
+      const response = await fetch('http://145.223.80.193:1317/cosmos/base/tendermint/v1beta1/node_info');
+      const data = await response.json();
+      return {
+        moniker: data.default_node_info.moniker,
+        network: data.default_node_info.network,
+        version: data.default_node_info.version,
+        appName: data.application_version.name,
+        appVersion: data.application_version.version,
+      };
+    },
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes since this rarely changes
+  });
+
+  const { data: blocks, isLoading } = useQuery<Block[]>({
     queryKey: ["latest-blocks"],
     queryFn: async () => {
       // Fetch latest block info from the endpoint
       const response = await fetch('http://145.223.80.193:26657/status');
       const data = await response.json();
       
-      // Create a block entry from the latest block info
-      const latestBlockTime = new Date(data.result.sync_info.latest_block_time);
-      const timeAgo = Math.floor((Date.now() - latestBlockTime.getTime()) / 1000);
-      const timeString = timeAgo < 60 ? `${timeAgo} secs ago` : `${Math.floor(timeAgo / 60)} mins ago`;
+      const latestHeight = parseInt(data.result.sync_info.latest_block_height);
+      const blockPromises = [];
       
-      return [{
-        height: data.result.sync_info.latest_block_height,
-        validator: data.result.validator_info.address,
-        txns: 0, // This information is not available in the status endpoint
-        time: timeString,
-      }];
+      // Fetch last 6 blocks
+      for (let i = 0; i < 6; i++) {
+        const height = latestHeight - i;
+        const promise = fetch(`http://145.223.80.193:26657/block?height=${height}`)
+          .then(res => res.json())
+          .then(blockData => {
+            const blockTime = new Date(blockData.result.block.header.time);
+            const now = new Date();
+            const timeAgo = Math.floor((now.getTime() - blockTime.getTime()) / 1000);
+            let timeString;
+            if (timeAgo < 60) {
+              timeString = `${timeAgo} secs ago`;
+            } else if (timeAgo < 3600) {
+              const mins = Math.floor(timeAgo / 60);
+              timeString = `${mins} min${mins > 1 ? 's' : ''} ago`;
+            } else {
+              const hours = Math.floor(timeAgo / 3600);
+              timeString = `${hours} hour${hours > 1 ? 's' : ''} ago`;
+            }
+            
+            return {
+              height: height.toString(),
+              validator: blockData.result.block.header.proposer_address,
+              txns: blockData.result.block.data.txs ? blockData.result.block.data.txs.length : 0,
+              time: timeString,
+            };
+          });
+        blockPromises.push(promise);
+      }
+      
+      return Promise.all(blockPromises);
     },
+    refetchInterval: 1000, // Refetch every second for more real-time updates
+    staleTime: 0, // Consider data stale immediately to ensure fresh data
+    refetchOnWindowFocus: true,
   });
 
   return (
     <Card>
-      <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0 pb-4 border-b">
-        <CardTitle className="text-lg font-medium">Latest Blocks</CardTitle>
-        <Button variant="outline" size="sm">
-          Customize
-        </Button>
+      <CardHeader className="flex flex-col space-y-2 pb-4 border-b">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
+          <CardTitle className="text-lg font-medium">Latest Blocks</CardTitle>
+          <Button variant="outline" size="sm">
+            Customize
+          </Button>
+        </div>
+        {nodeInfo && (
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Info className="h-4 w-4" />
+            <span className="font-medium">{nodeInfo.appName} v{nodeInfo.appVersion}</span>
+            <span>•</span>
+            <span>{nodeInfo.moniker}</span>
+            <span>•</span>
+            <span>{nodeInfo.network}</span>
+            <span>•</span>
+            <span>Node v{nodeInfo.version}</span>
+          </div>
+        )}
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {blocks?.map((block, i) => (
-            <div
-              key={i}
-              className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 py-3 border-b"
-            >
-              {/* Block Details */}
-              <div className="flex items-center gap-3 w-full md:w-auto">
-                <div className="rounded-md bg-background p-2">
-                  <Box className="h-6 w-6 text-muted" />
+          {isLoading ? (
+            // Loading skeleton
+            Array(6).fill(null).map((_, i) => (
+              <div
+                key={i}
+                className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 py-3 border-b animate-pulse"
+              >
+                <div className="flex items-center gap-3 w-full md:w-auto">
+                  <div className="rounded-md bg-gray-200 p-2 w-10 h-10" />
+                  <div>
+                    <div className="h-4 w-20 bg-gray-200 rounded" />
+                    <div className="h-3 w-16 bg-gray-200 rounded mt-2" />
+                  </div>
                 </div>
-                <div>
-                  <Link
-                    href={`/block/${block.height}`}
-                    className="text-primary hover:text-blue-600 font-medium"
-                  >
-                    {block.height}
-                  </Link>
-                  <div className="text-sm text-muted-foreground opacity-50">
-                    {block.time}
+                <div className="text-sm w-full text-muted-foreground w-full md:w-auto">
+                  <div className="h-4 w-48 bg-gray-200 rounded" />
+                  <div className="h-4 w-32 bg-gray-200 rounded mt-2" />
+                </div>
+              </div>
+            ))
+          ) : (
+            blocks?.map((block, i) => (
+              <div
+                key={i}
+                className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 py-3 border-b"
+              >
+                {/* Block Details */}
+                <div className="flex items-center gap-3 w-full md:w-auto">
+                  <div className="rounded-md bg-background p-2">
+                    <Box className="h-6 w-6 text-muted" />
+                  </div>
+                  <div>
+                    <Link
+                      href={`/block/${block.height}`}
+                      className="text-primary hover:text-blue-600 font-medium"
+                    >
+                      {block.height}
+                    </Link>
+                    <div className="text-sm text-muted-foreground opacity-50">
+                      {block.time}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Validator and Transactions */}
+                <div className="text-sm w-full text-muted-foreground w-full md:w-auto">
+                  <div>
+                    <span className="opacity-50">Validated By </span>
+                    <Link
+                      href={`/address/${block.validator}`}
+                      className="text-primary hover:text-blue-600 break-all"
+                    >
+                      {block.validator}
+                    </Link>
+                  </div>
+                  <div>
+                    <span className="text-primary">{block.txns} </span>
+                    <span className="opacity-50">txns in 3 secs</span>
                   </div>
                 </div>
               </div>
-
-              {/* Validator and Transactions */}
-              <div className="text-sm w-full text-muted-foreground w-full md:w-auto">
-                <div>
-                  <span className="opacity-50">Validated By </span>
-                  <Link
-                    href={`/address/${block.validator}`}
-                    className="text-primary hover:text-blue-600 break-all"
-                  >
-                    {block.validator}
-                  </Link>
-                </div>
-                <div>
-                  <span className="text-primary">{block.txns} </span>
-                  <span className="opacity-50">txns in 3 secs</span>
-                </div>
-              </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
 
         <Button variant="ghost" className="w-full mt-4">
