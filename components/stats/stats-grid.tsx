@@ -1,16 +1,10 @@
 "use client"
 
-import { Globe, Clock, ArrowLeftRight, Shield, Server } from "lucide-react"
+import { Shield, Clock, ArrowLeftRight, Coins } from "lucide-react"
 import { formatNumber } from "@/lib/utils"
-import Image from "next/image";
 
 interface StatsGridProps {
   stats: {
-    price: number
-    btcValue: number
-    priceChange: string
-    marketCap: number
-    marketCapUcc: number
     transactions: number
     tps: number
     gasPrice: number
@@ -29,120 +23,72 @@ interface StatsGridProps {
 
 export function StatsGrid({ stats }: StatsGridProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 border-r rounded-lg">
-      <div className="flex flex-col gap-2">
-        {/* UCC Price */}
-        <div className="flex justify-start bg-card rounded-t-lg border-b p-4">
-          <div className="h-5 w-5">
-            <Image
-              src="/images/icon.png"
-              alt="UCCASH"
-              width={24}
-              height={24}
-            />
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4">
+      {/* Validator Status Card */}
+      <div className="bg-card rounded-lg p-4 border border-border/50">
+        <div className="flex items-center gap-2 mb-4">
+          <Shield className="h-5 w-5 text-primary" />
+          <span className="text-sm font-medium">VALIDATOR STATUS</span>
+        </div>
+        <div className="space-y-2">
+          <div className="flex flex-col">
+            <span className="text-lg font-medium">{stats.validatorInfo.moniker}</span>
+            <span className="text-sm text-muted-foreground">
+              {stats.validatorInfo.bondedStatus.replace('BOND_STATUS_', '')}
+            </span>
           </div>
-
-          <div className="lg:text-sm text-xs w-full">
-            <span className="lg:text-sm text-xs text-muted-foreground opacity-50 ml-1">UCC PRICE</span>
-            <div className="flex gap-1 w-full">
-              <span className="w-full flex">
-                ${stats.price.toFixed(2)} <span className="ml-1"> @ </span><span className="text-muted-foreground opacity-50 ml-1">{stats.btcValue.toFixed(6)}BTC</span>
-                <span className="ml-1 text-green-500">{stats.priceChange}</span>
-              </span>
-            </div>
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground">Commission Rate</span>
+            <span className="font-medium">{stats.validatorInfo.commissionRate}%</span>
           </div>
         </div>
+      </div>
 
-        {/* Market Cap */}
-        <div className="flex gap-2 bg-card border-b p-4">
-          <div className="">
-            <Globe className="h-5 w-5" />
-          </div>
-          <div className="lg:text-sm text-xs flex flex-col gap-1">
-            <div className="text-muted-foreground opacity-50">UCC MARKET CAP ON UCC</div>
-            <div className="flex gap-1">${formatNumber(stats.marketCap)}
-              <div className="lg:text-sm text-xs text-muted-foreground opacity-50">
-                ({formatNumber(stats.marketCapUcc)} UCC)
-              </div>
+      {/* Network Stats Card */}
+      <div className="bg-card rounded-lg p-4 border border-border/50">
+        <div className="flex items-center gap-2 mb-4">
+          <Clock className="h-5 w-5 text-primary" />
+          <span className="text-sm font-medium">NETWORK STATS</span>
+        </div>
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">Latest Block</span>
+            <div className="text-right">
+              <span className="text-lg font-medium">{formatNumber(stats.latestBlock)}</span>
+              <span className="text-sm text-muted-foreground ml-1">({stats.blockTime}s)</span>
             </div>
           </div>
-        </div>
-
-        {/* Validator Info */}
-        <div className="flex gap-2 bg-card border-b p-4">
-          <div className="">
-            <Shield className="h-5 w-5" />
-          </div>
-          <div className="lg:text-sm text-xs flex flex-col gap-1">
-            <div className="text-muted-foreground opacity-50">VALIDATOR STATUS</div>
-            <div className="flex flex-col">
-              <div className="flex gap-1">
-                {stats.validatorInfo.moniker}
-                <div className="lg:text-sm text-xs text-muted-foreground opacity-50">
-                  ({stats.validatorInfo.bondedStatus})
-                </div>
-              </div>
-              <div className="text-xs text-muted-foreground">
-                Commission Rate: {stats.validatorInfo.commissionRate}%
-              </div>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">Gas Price</span>
+            <div className="text-right">
+              <span className="text-lg font-medium">{stats.gasPrice} Gwei</span>
+              <span className="text-sm text-muted-foreground ml-1">(${stats.gasPriceUsd})</span>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="flex flex-col gap-2 border-l">
-        <div className="flex justify-between border-b">
-          {/* Transactions */}
-          <div className="flex gap-2 bg-card p-4 lg:text-sm text-xs">
-            <div className="">
-              <ArrowLeftRight className="h-5 w-5" />
-            </div>
-            <div className="">
-              <span className="lg:text-sm text-xs text-muted-foreground opacity-50">TRANSACTIONS</span>
-              <div className="text-md">
-                {formatNumber(stats.transactions)} <span className="text-muted-foreground opacity-50">
-                  ({stats.tps.toFixed(1)} TPS)
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Gas Price */}
-          <div className="flex justify-end gap-2 bg-card p-4 lg:text-sm text-xs">
-            <div className="">
-              <span className="lg:text-sm text-xs text-muted-foreground opacity-50">MED GAS PRICE</span>
-              <div className="flex gap-1">{stats.gasPrice} Gwei
-                <span className="lg:text-sm text-xs text-muted-foreground opacity-50">(${stats.gasPriceUsd})</span>
-              </div>
-            </div>
-          </div>
+      {/* Transaction Stats Card */}
+      <div className="bg-card rounded-lg p-4 border border-border/50">
+        <div className="flex items-center gap-2 mb-4">
+          <ArrowLeftRight className="h-5 w-5 text-primary" />
+          <span className="text-sm font-medium">TRANSACTION STATS</span>
         </div>
-
-        <div className="flex justify-between border-b">
-          {/* Latest Block */}
-          <div className="flex gap-2 bg-card p-4">
-            <div className="">
-              <Clock className="h-5 w-5" />
-            </div>
-            <div className="lg:text-sm text-xs flex flex-col gap-1">
-              <div className="text-muted-foreground opacity-50">LATEST BLOCK</div>
-              <div className="flex gap-1">{formatNumber(stats.latestBlock)}
-                <div className="lg:text-sm text-xs text-muted-foreground opacity-50">
-                  ({stats.blockTime}s)
-                </div>
-              </div>
-            </div>
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">Total Transactions</span>
+            <span className="text-lg font-medium">{formatNumber(stats.transactions)}</span>
           </div>
-
-          {/* Voting Power */}
-          <div className="flex gap-2 justify-end bg-card p-4">
-            <div className="lg:text-sm text-xs flex flex-col gap-1">
-              <div className="text-muted-foreground opacity-50">VOTING POWER</div>
-              <div className="flex gap-1">
-                {formatNumber(stats.votingPower)} UCC
-                <div className="lg:text-sm text-xs text-muted-foreground opacity-50">
-                  ({formatNumber(stats.validatorInfo.delegatorShares)} shares)
-                </div>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">TPS</span>
+            <span className="text-lg font-medium">{stats.tps.toFixed(1)}</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">Voting Power</span>
+            <div className="text-right">
+              <span className="text-lg font-medium">{formatNumber(stats.votingPower)} UCC</span>
+              <div className="text-xs text-muted-foreground">
+                {formatNumber(stats.validatorInfo.delegatorShares)} shares
               </div>
             </div>
           </div>

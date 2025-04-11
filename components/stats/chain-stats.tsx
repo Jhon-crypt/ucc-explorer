@@ -46,38 +46,42 @@ export function ChainStats() {
       const data = await response.json();
       
       // Extract block information
-      const latestBlock = parseInt(data.result.sync_info.latest_block_height);
+      const latestHeight = parseInt(data.result.sync_info.latest_block_height);
       const latestBlockTime = new Date(data.result.sync_info.latest_block_time);
       const blockTime = ((Date.now() - latestBlockTime.getTime()) / 1000).toFixed(1);
 
-      // Fetch the latest block to get transaction count
-      const blockResponse = await fetch(`http://145.223.80.193:26657/block?height=${latestBlock}`);
-      const blockData = await blockResponse.json();
-      const txCount = blockData.result.block.data.txs ? blockData.result.block.data.txs.length : 0;
-
+      // Calculate total transactions from last 100 blocks
+      const blockPromises = [];
+      for (let i = 0; i < 100; i++) {
+        const height = latestHeight - i;
+        blockPromises.push(
+          fetch(`http://145.223.80.193:26657/block?height=${height}`)
+            .then(res => res.json())
+            .then(blockData => blockData.result.block.data.txs ? blockData.result.block.data.txs.length : 0)
+        );
+      }
+      
+      const blockTxCounts = await Promise.all(blockPromises);
+      const totalTx = blockTxCounts.reduce((sum, count) => sum + count, 0);
+      
       // Calculate TPS
       const now = Date.now();
       const timeDiff = (now - prevTimestamp) / 1000; // Convert to seconds
-      const blockDiff = latestBlock - prevBlockHeight;
-      const txDiff = txCount - prevTxCount;
+      const blockDiff = latestHeight - prevBlockHeight;
+      const txDiff = totalTx - prevTxCount;
       const tps = blockDiff > 0 ? Number((txDiff / timeDiff).toFixed(1)) : 0;
 
       // Update previous values for next calculation
-      prevBlockHeight = latestBlock;
+      prevBlockHeight = latestHeight;
       prevTimestamp = now;
-      prevTxCount = txCount;
+      prevTxCount = totalTx;
       
       return {
-        price: 583.93,
-        btcValue: 0.008701,
-        priceChange: "+0.39%",
-        marketCap: 86504593753.00,
-        marketCapUcc: 142142881,
-        transactions: txCount,
+        transactions: totalTx,
         tps,
         gasPrice: 1,
         gasPriceUsd: 0.01,
-        latestBlock,
+        latestBlock: latestHeight,
         blockTime: parseFloat(blockTime),
         votingPower: validatorData?.totalTokens || 0,
         validatorInfo: {
@@ -85,11 +89,7 @@ export function ChainStats() {
           bondedStatus: validatorData?.bondedStatus || 'UNKNOWN',
           moniker: validatorData?.moniker || 'Unknown',
           delegatorShares: validatorData?.delegatorShares || 0
-        },
-        chartData: Array.from({ length: 30 }, (_, i) => ({
-          date: new Date(Date.now() - (30 - i) * 24 * 60 * 60 * 1000),
-          value: 2800 + Math.random() * 1600
-        }))
+        }
       }
     },
     refetchInterval: 1000,
@@ -106,7 +106,7 @@ export function ChainStats() {
         <StatsGrid stats={stats} />
       </div>
       <div className="lg:col-span-1">
-        <TransactionChart data={stats.chartData} />
+        <TransactionChart />
       </div>
     </div>
   )
