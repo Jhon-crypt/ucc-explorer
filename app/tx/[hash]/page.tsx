@@ -32,28 +32,50 @@ export default function TransactionPage() {
   const { data: transaction, isLoading } = useQuery<Transaction>({
     queryKey: ["transaction", hash],
     queryFn: async () => {
-      // For now, we're returning mock data
-      // In a real implementation, you would fetch from an API
-      return {
-        hash: hash,
-        height: 1000,
-        status: "Success",
-        time: new Date().toISOString(),
-        gasUsed: "50000",
-        gasWanted: "100000",
-        fee: "0.01 UCC",
-        memo: "Transaction memo",
-        events: [
-          {
-            type: "transfer",
-            attributes: [
-              { key: "recipient", value: "ucc1x8m4qr5nqw9lmxu8x9z3f5q9t6z7j8k7l6m5n" },
-              { key: "sender", value: "ucc1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p7q8r9s" },
-              { key: "amount", value: "100ucc" }
-            ]
-          }
-        ]
+      // Fetch transaction details from the Cosmos API
+      const baseUrl = 'http://145.223.80.193:1317';
+      const response = await fetch(`${baseUrl}/cosmos/tx/v1beta1/txs/${hash}`);
+      
+      if (!response.ok) {
+        throw new Error('Transaction not found');
       }
+      
+      const data = await response.json();
+      const txResponse = data.tx_response;
+      const tx = data.tx;
+      
+      // Extract fee information
+      let fee = "0 UCC";
+      if (tx?.auth_info?.fee?.amount && tx.auth_info.fee.amount.length > 0) {
+        const feeAmount = tx.auth_info.fee.amount[0];
+        fee = `${parseInt(feeAmount.amount) / Math.pow(10, 18)} ${feeAmount.denom.replace('a', '')}`;
+      }
+      
+      // Extract memo if present
+      const memo = tx?.body?.memo || "";
+      
+      // Transform events
+      const parsedEvents = txResponse.events.map((event: any) => {
+        return {
+          type: event.type,
+          attributes: event.attributes.map((attr: any) => ({
+            key: atob(attr.key),
+            value: attr.value ? atob(attr.value) : ""
+          }))
+        };
+      });
+      
+      return {
+        hash: txResponse.txhash,
+        height: parseInt(txResponse.height),
+        status: txResponse.code === 0 ? "Success" : "Failed",
+        time: txResponse.timestamp,
+        gasUsed: txResponse.gas_used,
+        gasWanted: txResponse.gas_wanted,
+        fee: fee,
+        memo: memo,
+        events: parsedEvents
+      };
     },
   })
 

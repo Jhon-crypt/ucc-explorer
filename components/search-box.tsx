@@ -48,21 +48,33 @@ export function SearchBox() {
     setShowResults(true);
     
     try {
-      // For now, we're creating mock transaction data
-      // In a real implementation, you would fetch from an API
-      if (searchQuery.startsWith("0x") || searchQuery.startsWith("tx")) {
-        const mockTransaction: Transaction = {
-          hash: searchQuery,
-          height: 1000,
-          status: "Success",
-          time: new Date().toISOString(),
-          gasUsed: "50000",
-          gasWanted: "100000",
-          fee: "0.01 UCC"
-        };
-        setSearchResults([mockTransaction]);
+      // Use the Cosmos tx API endpoint to search for a transaction by hash
+      if (searchQuery.trim()) {
+        const baseUrl = 'http://145.223.80.193:1317';
+        
+        // If searching by hash directly
+        const response = await fetch(`${baseUrl}/cosmos/tx/v1beta1/txs/${searchQuery}`);
+        
+        if (response.ok) {
+          const data = await response.json();
+          const txResponse = data.tx_response;
+          
+          const mockTransaction: Transaction = {
+            hash: txResponse.txhash,
+            height: parseInt(txResponse.height),
+            status: txResponse.code === 0 ? "Success" : "Failed",
+            time: txResponse.timestamp,
+            gasUsed: txResponse.gas_used,
+            gasWanted: txResponse.gas_wanted,
+            fee: "0.01 UCC" // Fee info might need to be extracted from tx.auth_info.fee
+          };
+          setSearchResults([mockTransaction]);
+        } else {
+          // If no exact match, search might not be implemented in the API
+          // In a production environment, you would implement server-side search
+          setSearchResults([]);
+        }
       } else {
-        // If not a tx hash, show empty results
         setSearchResults([]);
       }
     } catch (error) {
