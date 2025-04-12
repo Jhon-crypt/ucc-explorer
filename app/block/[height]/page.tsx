@@ -7,8 +7,8 @@ export function generateStaticParams() {
   return []
 }
 
-// Page component with async to match expected types
-export default async function Page({ params }: { params: { height: string } }) {
+// Page component
+export default function Page({ params }: { params: { height: string } }) {
   const height = parseInt(params.height)
   
   return (

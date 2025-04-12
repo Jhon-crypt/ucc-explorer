@@ -9,8 +9,8 @@ export function generateStaticParams() {
   return []
 }
 
-// Page component with async to match expected types
-export default async function Page({ params }: { params: { hash: string } }) {
+// Page component
+export default function Page({ params }: { params: { hash: string } }) {
   const hash = params.hash
   
   return (
