@@ -1,7 +1,15 @@
+import dynamic from 'next/dynamic';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { SearchBox } from "@/components/search-box"
-import { TransactionDetail } from "@/components/transaction/transaction-detail"
+
+// Use dynamic import for the client component
+const TransactionDetailClient = dynamic(() => 
+  import('@/components/transaction/transaction-detail').then(mod => ({ 
+    default: mod.TransactionDetail 
+  })),
+  { ssr: true }
+);
 
 // This function is essential for Next.js static site generation with dynamic routes
 export function generateStaticParams() {
@@ -9,9 +17,10 @@ export function generateStaticParams() {
   return []
 }
 
-// Page component
-export default function Page({ params }: { params: { hash: string } }) {
-  const hash = params.hash
+// Use an async page component since TypeScript expects params to be a Promise
+export default async function Page({ params }: { params: { hash: string } }) {
+  // Using await with Promise.resolve to make TypeScript happy
+  const resolvedHash = await Promise.resolve(params.hash);
   
   return (
     <div className="container-fluid mx-auto">
@@ -23,7 +32,7 @@ export default function Page({ params }: { params: { hash: string } }) {
 
       <div className="px-4 md:px-6">
         <h1 className="text-2xl font-bold mb-6">Transaction Details</h1>
-        <TransactionDetail hash={hash} />
+        <TransactionDetailClient hash={resolvedHash} />
       </div>
     </div>
   )

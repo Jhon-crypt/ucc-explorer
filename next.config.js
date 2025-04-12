@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Disable static export as it's causing type issues
-  // output: 'export',
+  // Re-enable static export with our new component structure
+  output: 'export',
   eslint: {
     ignoreDuringBuilds: true,
   },
