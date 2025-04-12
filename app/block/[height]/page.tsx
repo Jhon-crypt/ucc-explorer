@@ -1,19 +1,14 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { SearchBox } from "@/components/search-box"
 import { BlockDetail } from "@/components/block/block-detail"
 
-// This is required for static site generation with dynamic routes
+// This function is essential for Next.js static site generation with dynamic routes
 export function generateStaticParams() {
-  // For static export, we need to return an empty array or known block heights
+  // Return empty array for static export
   return []
 }
 
-// Define correct types for Next.js 15 server components
-interface PageProps {
-  params: { height: string }
-}
-
-export default function BlockPage({ params }: PageProps) {
+// Page component 
+export default function Page({ params }: { params: { height: string } }) {
   const height = parseInt(params.height)
   
   return (

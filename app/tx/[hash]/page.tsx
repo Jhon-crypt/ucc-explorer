@@ -3,18 +3,14 @@ import { Separator } from "@/components/ui/separator"
 import { SearchBox } from "@/components/search-box"
 import { TransactionDetail } from "@/components/transaction/transaction-detail"
 
-// This is required for static site generation with dynamic routes
-export function generateStaticParams() {
+export const generateStaticParams = () => {
   // For static export, we need to return an empty array or known transaction hashes
   return []
 }
 
-// Define correct types for Next.js 15 server components
-interface PageProps {
+const TransactionPage = ({ params }: {
   params: { hash: string }
-}
-
-export default function TransactionPage({ params }: PageProps) {
+}) => {
   const hash = params.hash
   
   return (
@@ -31,4 +27,6 @@ export default function TransactionPage({ params }: PageProps) {
       </div>
     </div>
   )
-} 
+}
+
+export default TransactionPage 
