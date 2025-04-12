@@ -2,12 +2,14 @@ import { SearchBar } from "@/components/search-bar"
 import { ChainStats } from "@/components/stats/chain-stats"
 import { LatestActivity } from "@/components/home/latest-activity"
 import { ModuleAccounts } from "@/components/stats/module-accounts"
+import { ChainDetails } from "@/components/stats/chain-details"
 
 export default function Home() {
   return (
     <div className="container-fluid mx-auto">
       <SearchBar />
       <ChainStats />
+      <ChainDetails />
       <LatestActivity />
 
       <div className="mt-8 bg-card p-4">
