@@ -9,7 +9,12 @@ export function generateStaticParams() {
   return []
 }
 
-export default function TransactionPage({ params }: { params: { hash: string } }) {
+// Define correct types for Next.js 15 server components
+interface PageProps {
+  params: { hash: string }
+}
+
+export default function TransactionPage({ params }: PageProps) {
   const hash = params.hash
   
   return (

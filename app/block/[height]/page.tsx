@@ -8,7 +8,12 @@ export function generateStaticParams() {
   return []
 }
 
-export default function BlockPage({ params }: { params: { height: string } }) {
+// Define correct types for Next.js 15 server components
+interface PageProps {
+  params: { height: string }
+}
+
+export default function BlockPage({ params }: PageProps) {
   const height = parseInt(params.height)
   
   return (
