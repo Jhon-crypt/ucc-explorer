@@ -25,6 +25,14 @@ interface Transaction {
   }>
 }
 
+// This is required for static site generation with dynamic routes
+export function generateStaticParams() {
+  // For static export, we need to either:
+  // 1. Return an empty array (making this route fully client-side)
+  // 2. Return known transaction hashes if we have them
+  return []
+}
+
 export default function TransactionPage() {
   const params = useParams()
   const hash = params.hash as string

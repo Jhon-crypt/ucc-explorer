@@ -21,6 +21,14 @@ interface BlockDetail {
   validatorCount: number
 }
 
+// This is required for static site generation with dynamic routes
+export function generateStaticParams() {
+  // For static export, we need to either:
+  // 1. Return an empty array (making this route fully client-side)
+  // 2. Return known block heights if we have them
+  return []
+}
+
 export default function BlockPage() {
   const params = useParams()
   const height = parseInt(params.height as string)
