@@ -11,11 +11,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 
-interface Transaction {
-  hash: string;
+interface SearchResult {
+  type: 'transaction' | 'block';
+  hash?: string;
   height: number;
-  status: string;
+  status?: string;
   time: string;
+  txCount?: number;
   gasUsed?: string;
   gasWanted?: string;
   fee?: string;
@@ -23,10 +25,10 @@ interface Transaction {
 
 export function SearchBox() {
   const router = useRouter();
-  const [selectedFilter, setSelectedFilter] = useState("Transactions");
+  const [selectedFilter, setSelectedFilter] = useState("All filters");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<Transaction[]>([]);
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showResults, setShowResults] = useState(false);
 
@@ -46,40 +48,67 @@ export function SearchBox() {
 
     setIsSearching(true);
     setShowResults(true);
+    setSearchResults([]);
     
     try {
-      // Use the Cosmos tx API endpoint to search for a transaction by hash
-      if (searchQuery.trim()) {
-        const baseUrl = 'http://145.223.80.193:1317';
-        
-        // If searching by hash directly
-        const response = await fetch(`${baseUrl}/cosmos/tx/v1beta1/txs/${searchQuery}`);
-        
-        if (response.ok) {
-          const data = await response.json();
-          const txResponse = data.tx_response;
+      const baseUrl = 'http://145.223.80.193:1317';
+      const tendermintUrl = 'http://145.223.80.193:26657';
+      const results: SearchResult[] = [];
+      
+      // Check if search query is a transaction hash
+      if ((selectedFilter === "All filters" || selectedFilter === "Transactions") && 
+          (searchQuery.length > 40)) {
+        try {
+          // Try to fetch transaction by hash
+          const response = await fetch(`${baseUrl}/cosmos/tx/v1beta1/txs/${searchQuery}`);
           
-          const mockTransaction: Transaction = {
-            hash: txResponse.txhash,
-            height: parseInt(txResponse.height),
-            status: txResponse.code === 0 ? "Success" : "Failed",
-            time: txResponse.timestamp,
-            gasUsed: txResponse.gas_used,
-            gasWanted: txResponse.gas_wanted,
-            fee: "0.01 UCC" // Fee info might need to be extracted from tx.auth_info.fee
-          };
-          setSearchResults([mockTransaction]);
-        } else {
-          // If no exact match, search might not be implemented in the API
-          // In a production environment, you would implement server-side search
-          setSearchResults([]);
+          if (response.ok) {
+            const data = await response.json();
+            const txResponse = data.tx_response;
+            
+            results.push({
+              type: 'transaction',
+              hash: txResponse.txhash,
+              height: parseInt(txResponse.height),
+              status: txResponse.code === 0 ? "Success" : "Failed",
+              time: txResponse.timestamp,
+              gasUsed: txResponse.gas_used,
+              gasWanted: txResponse.gas_wanted,
+              fee: "0.01 UCC" // Fee info might need to be extracted from tx.auth_info.fee
+            });
+          }
+        } catch (error) {
+          console.log("Not a valid transaction hash");
         }
-      } else {
-        setSearchResults([]);
       }
+      
+      // Check if search query is a block height
+      if ((selectedFilter === "All filters" || selectedFilter === "Blocks") && 
+          (!isNaN(parseInt(searchQuery)))) {
+        try {
+          // Try to fetch block by height
+          const blockHeight = parseInt(searchQuery);
+          const response = await fetch(`${tendermintUrl}/block?height=${blockHeight}`);
+          
+          if (response.ok) {
+            const data = await response.json();
+            const block = data.result.block;
+            
+            results.push({
+              type: 'block',
+              height: blockHeight,
+              time: block.header.time,
+              txCount: block.data.txs ? block.data.txs.length : 0
+            });
+          }
+        } catch (error) {
+          console.log("Not a valid block height");
+        }
+      }
+      
+      setSearchResults(results);
     } catch (error) {
       console.error("Search error:", error);
-      setSearchResults([]);
     } finally {
       setIsSearching(false);
     }
@@ -91,9 +120,13 @@ export function SearchBox() {
     }
   };
 
-  const viewTransactionDetails = (hash: string) => {
-    // Navigate to transaction details page
-    router.push(`/tx/${hash}`);
+  const viewSearchResult = (result: SearchResult) => {
+    // Navigate to the appropriate page based on result type
+    if (result.type === 'transaction' && result.hash) {
+      router.push(`/tx/${result.hash}`);
+    } else if (result.type === 'block') {
+      router.push(`/block/${result.height}`);
+    }
   };
 
   return (
@@ -126,7 +159,7 @@ export function SearchBox() {
 
           {/* Search Bar */}
           <Input
-            placeholder="Search transactions (enter tx hash)"
+            placeholder="Search transactions, blocks..."
             className="flex-grow border-none rounded-none bg-white text-black pl-4 py-2 text-sm"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -158,31 +191,48 @@ export function SearchBox() {
             ) : searchResults.length > 0 ? (
               <div className="space-y-4">
                 <h3 className="text-sm font-medium">Search Results</h3>
-                {searchResults.map((tx, index) => (
+                {searchResults.map((result, index) => (
                   <div 
                     key={index} 
                     className="border-b pb-3 cursor-pointer hover:bg-muted p-2 rounded-md"
-                    onClick={() => viewTransactionDetails(tx.hash)}
+                    onClick={() => viewSearchResult(result)}
                   >
-                    <div className="flex justify-between">
-                      <div className="font-mono text-sm truncate max-w-[70%]">
-                        {tx.hash}
-                      </div>
-                      <div className="text-xs bg-green-100 text-green-800 rounded-full px-2 py-0.5">
-                        {tx.status}
-                      </div>
-                    </div>
+                    {result.type === 'transaction' ? (
+                      <>
+                        <div className="flex justify-between">
+                          <div className="font-medium text-sm">Transaction</div>
+                          <div className="text-xs bg-green-100 text-green-800 rounded-full px-2 py-0.5">
+                            {result.status}
+                          </div>
+                        </div>
+                        <div className="font-mono text-sm truncate max-w-[100%] mt-1">
+                          {result.hash}
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex justify-between">
+                          <div className="font-medium text-sm">Block</div>
+                          <div className="text-xs bg-blue-100 text-blue-800 rounded-full px-2 py-0.5">
+                            {result.txCount} Txs
+                          </div>
+                        </div>
+                        <div className="font-mono text-sm mt-1">
+                          Height: {result.height}
+                        </div>
+                      </>
+                    )}
                     <div className="flex justify-between mt-2 text-xs text-muted-foreground">
-                      <div>Block: {tx.height}</div>
-                      <div>{new Date(tx.time).toLocaleString()}</div>
+                      <div>{result.type === 'transaction' ? `Block: ${result.height}` : ''}</div>
+                      <div>{new Date(result.time).toLocaleString()}</div>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
               <div className="text-center py-6 text-muted-foreground">
-                <p>No transactions found matching &quot;{searchQuery}&quot;</p>
-                <p className="text-xs mt-2">Try searching for a complete transaction hash</p>
+                <p>No results found matching &quot;{searchQuery}&quot;</p>
+                <p className="text-xs mt-2">Try searching for a transaction hash or block height</p>
               </div>
             )}
             

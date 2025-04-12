@@ -49,7 +49,7 @@ export function Navbar() {
           </div>
         </Link>
 
-        {/* Desktop Links */}
+        {/* Desktop Links
         <div className="hidden md:flex items-center space-x-3 lg:space-x-6">
           <Link href="/" className="lg:text-[16px] md:text-[10px] text-xs  font-medium hover:text-primary">
             Home
@@ -69,10 +69,10 @@ export function Navbar() {
           <Link href="/#" className="lg:text-[16px] md:text-[10px] text-xs  font-medium hover:text-primary">
             Developers
           </Link>
-        </div>
+        </div> */}
 
         {/* Mobile Menu Button */}
-        <button
+        {/* <button
           className="md:hidden relative z-50 p-2 text-gray-700 dark:text-white focus:outline-none"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
@@ -91,43 +91,9 @@ export function Navbar() {
                 }`}
             />
           </div>
-        </button>
+        </button> */}
 
-        {/* Actions */}
-        <div className="hidden md:flex items-center space-x-6">
-          <Link
-            href="/sign-up">
-            <Button variant="destructive" size="sm">
-              Sign up
-            </Button>
-          </Link>
-          <Link
-            href="/sign-in">
-            <Button variant="destructive" size="sm">Log in</Button>
-          </Link>
-
-
-          <div
-            onClick={toggleTheme}
-            className="relative flex items-center w-16 h-8 bg-yellow-500 dark:bg-gray-700 rounded-full cursor-pointer p-1"
-          >
-            {/* Circle */}
-            <div
-              className={`absolute w-6 h-6 bg-card rounded-full shadow-md transition-transform transform duration-300 ${theme === "dark" ? "translate-x-8" : "translate-x-0"
-                }`}
-            ></div>
-
-            {/* Icons */}
-            <Sun
-              className={`absolute left-2 w-4 h-4 text-white transition-opacity duration-300 ${theme === "dark" ? "opacity-0" : "opacity-100"
-                }`}
-            />
-            <Moon
-              className={`absolute right-2 w-4 h-4 text-white transition-opacity duration-300 ${theme === "dark" ? "opacity-100" : "opacity-0"
-                }`}
-            />
-          </div>
-        </div>
+        
       </div>
 
       {/* Mobile Menu */}

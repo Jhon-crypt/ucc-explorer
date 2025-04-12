@@ -87,13 +87,10 @@ export function LatestBlocks() {
   });
 
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader className="flex flex-col space-y-2 pb-4 border-b">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
           <CardTitle className="text-lg font-medium">Latest Blocks</CardTitle>
-          <Button variant="outline" size="sm">
-            Customize
-          </Button>
         </div>
         {nodeInfo && (
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -108,7 +105,7 @@ export function LatestBlocks() {
           </div>
         )}
       </CardHeader>
-      <CardContent>
+      <CardContent className="overflow-auto h-[480px]">
         <div className="space-y-4">
           {isLoading ? (
             // Loading skeleton
@@ -174,10 +171,6 @@ export function LatestBlocks() {
             ))
           )}
         </div>
-
-        <Button variant="ghost" className="w-full mt-4">
-          VIEW ALL BLOCKS
-        </Button>
       </CardContent>
     </Card>
   );

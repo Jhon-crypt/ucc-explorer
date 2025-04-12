@@ -63,14 +63,11 @@ export function LatestTransactions() {
   });
 
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0 pb-4 border-b">
         <CardTitle className="text-lg font-medium">Latest Transactions</CardTitle>
-        <Button variant="outline" size="sm">
-          Customize
-        </Button>
       </CardHeader>
-      <CardContent>
+      <CardContent className="overflow-auto h-[480px]">
         <div className="space-y-4">
           {isLoading ? (
             // Loading skeleton
@@ -146,10 +143,6 @@ export function LatestTransactions() {
             ))
           )}
         </div>
-
-        <Button variant="ghost" className="w-full mt-4">
-          VIEW ALL TRANSACTIONS
-        </Button>
       </CardContent>
     </Card>
   );
