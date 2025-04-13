@@ -6,24 +6,11 @@
  * @returns Promise with fetch response
  */
 export async function fetchWithCors(url: string, options: RequestInit = {}) {
-  // Choose one of these methods based on what works best for your API:
-
-  // Method 1: Using a CORS proxy
-  // const corsProxyUrl = 'https://corsproxy.io/?';
-  // return fetch(corsProxyUrl + encodeURIComponent(url), options);
-
-  // Method 2: Using mode: 'cors' with credentials
-  return fetch(url, {
-    ...options,
-    mode: 'cors',
-    credentials: 'omit',
-    headers: {
-      ...options.headers,
-      'Accept': 'application/json',
-    }
-  });
-
-  // Method 3: If neither works, you might need a server-side proxy solution
+  // Try alternative CORS proxy format
+  // Using allorigins.win which has a more reliable URL format
+  const corsProxyUrl = 'https://api.allorigins.win/raw?url=';
+  
+  return fetch(`${corsProxyUrl}${encodeURIComponent(url)}`, options);
 }
 
 // Base URLs for the blockchain APIs
