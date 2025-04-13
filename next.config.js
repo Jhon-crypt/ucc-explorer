@@ -10,7 +10,6 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: { unoptimized: true },
-  distDir: 'build', // Specify the build directory
 };
 
 module.exports = nextConfig;
