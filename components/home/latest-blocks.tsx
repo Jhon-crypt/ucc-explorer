@@ -5,6 +5,8 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Box, Info } from "lucide-react";
 import Link from "next/link";
+import { User, Clock } from "lucide-react";
+import { fetchWithCors, REST_API_URL, RPC_API_URL } from "@/lib/api-utils";
 
 interface Block {
   height: string;
@@ -26,7 +28,7 @@ export function LatestBlocks() {
   const { data: nodeInfo } = useQuery<NodeInfo>({
     queryKey: ["node-info"],
     queryFn: async () => {
-      const response = await fetch('http://145.223.80.193:1317/cosmos/base/tendermint/v1beta1/node_info');
+      const response = await fetchWithCors(`${REST_API_URL}/cosmos/base/tendermint/v1beta1/node_info`);
       const data = await response.json();
       return {
         moniker: data.default_node_info.moniker,
@@ -43,7 +45,7 @@ export function LatestBlocks() {
     queryKey: ["latest-blocks"],
     queryFn: async () => {
       // Fetch latest block info from the endpoint
-      const response = await fetch('http://145.223.80.193:26657/status');
+      const response = await fetchWithCors(`${RPC_API_URL}/status`);
       const data = await response.json();
       
       const latestHeight = parseInt(data.result.sync_info.latest_block_height);
@@ -52,7 +54,7 @@ export function LatestBlocks() {
       // Fetch last 6 blocks
       for (let i = 0; i < 6; i++) {
         const height = latestHeight - i;
-        const promise = fetch(`http://145.223.80.193:26657/block?height=${height}`)
+        const promise = fetchWithCors(`${RPC_API_URL}/block?height=${height}`)
           .then(res => res.json())
           .then(blockData => {
             const blockTime = new Date(blockData.result.block.header.time);

@@ -12,6 +12,7 @@ import {
   PackageIcon,
   ServerIcon
 } from "lucide-react"
+import { fetchWithCors, REST_API_URL } from "@/lib/api-utils"
 
 interface ChainInfo {
   network: string
@@ -30,7 +31,7 @@ export function ChainDetails() {
   const { data: chainInfo, isLoading } = useQuery<ChainInfo>({
     queryKey: ["chainInfo"],
     queryFn: async () => {
-      const response = await fetch('http://145.223.80.193:1317/cosmos/base/tendermint/v1beta1/node_info')
+      const response = await fetchWithCors(`${REST_API_URL}/cosmos/base/tendermint/v1beta1/node_info`)
       const data = await response.json()
       return {
         network: data.default_node_info.network,

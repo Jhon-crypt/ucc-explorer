@@ -7,13 +7,14 @@ import {
   Network,
   BarChart3
 } from "lucide-react"
+import { fetchWithCors, REST_API_URL, RPC_API_URL } from "@/lib/api-utils"
 
 export function ChainStats() {
   // Fetch validator data
   const { data: validatorData } = useQuery({
     queryKey: ["validators"],
     queryFn: async () => {
-      const response = await fetch('http://145.223.80.193:1317/cosmos/staking/v1beta1/validators');
+      const response = await fetchWithCors(`${REST_API_URL}/cosmos/staking/v1beta1/validators`);
       const data = await response.json();
       // Get the first validator
       const validator = data.validators[0];
@@ -32,7 +33,7 @@ export function ChainStats() {
   const { data: statusData } = useQuery({
     queryKey: ["status"],
     queryFn: async () => {
-      const response = await fetch('http://145.223.80.193:26657/status');
+      const response = await fetchWithCors(`${RPC_API_URL}/status`);
       const data = await response.json();
       
       // Extract block information
@@ -56,7 +57,7 @@ export function ChainStats() {
     queryKey: ["txStats"],
     queryFn: async () => {
       // Fetch voting power from validators
-      const validatorsResponse = await fetch('http://145.223.80.193:1317/cosmos/staking/v1beta1/validators');
+      const validatorsResponse = await fetchWithCors(`${REST_API_URL}/cosmos/staking/v1beta1/validators`);
       const validatorsData = await validatorsResponse.json();
       
       // Calculate total tokens (converting from atucc with 18 decimals to UCC)

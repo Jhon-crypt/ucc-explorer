@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { useQuery } from "@tanstack/react-query"
 import { Loader2 } from "lucide-react"
+import { fetchWithCors, REST_API_URL } from "@/lib/api-utils"
 
 interface Transaction {
   hash: string
@@ -28,8 +29,7 @@ export function TransactionDetail({ hash }: { hash: string }) {
     queryKey: ["transaction", hash],
     queryFn: async () => {
       // Fetch transaction details from the Cosmos API
-      const baseUrl = 'http://145.223.80.193:1317';
-      const response = await fetch(`${baseUrl}/cosmos/tx/v1beta1/txs/${hash}`);
+      const response = await fetchWithCors(`${REST_API_URL}/cosmos/tx/v1beta1/txs/${hash}`);
       
       if (!response.ok) {
         throw new Error('Transaction not found');

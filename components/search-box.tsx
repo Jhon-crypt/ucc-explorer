@@ -10,17 +10,18 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { fetchWithCors, REST_API_URL, RPC_API_URL } from "@/lib/api-utils";
 
 interface SearchResult {
-  type: 'transaction' | 'block';
+  type: 'transaction' | 'block' | 'address';
   hash?: string;
-  height: number;
+  height?: number;
   status?: string;
-  time: string;
-  txCount?: number;
+  time?: string;
   gasUsed?: string;
   gasWanted?: string;
   fee?: string;
+  txCount?: number;
 }
 
 export function SearchBox() {
@@ -43,16 +44,22 @@ export function SearchBox() {
     setIsDropdownOpen(false);
   };
 
-  const handleSearch = async () => {
-    if (!searchQuery.trim()) return;
+  const handleQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
 
+  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedFilter(e.target.value);
+  };
+
+  const handleSearch = async () => {
+    if (!searchQuery) return;
+    
     setIsSearching(true);
     setShowResults(true);
     setSearchResults([]);
     
     try {
-      const baseUrl = 'http://145.223.80.193:1317';
-      const tendermintUrl = 'http://145.223.80.193:26657';
       const results: SearchResult[] = [];
       
       // Check if search query is a transaction hash
@@ -60,7 +67,7 @@ export function SearchBox() {
           (searchQuery.length > 40)) {
         try {
           // Try to fetch transaction by hash
-          const response = await fetch(`${baseUrl}/cosmos/tx/v1beta1/txs/${searchQuery}`);
+          const response = await fetchWithCors(`${REST_API_URL}/cosmos/tx/v1beta1/txs/${searchQuery}`);
           
           if (response.ok) {
             const data = await response.json();
@@ -88,7 +95,7 @@ export function SearchBox() {
         try {
           // Try to fetch block by height
           const blockHeight = parseInt(searchQuery);
-          const response = await fetch(`${tendermintUrl}/block?height=${blockHeight}`);
+          const response = await fetchWithCors(`${RPC_API_URL}/block?height=${blockHeight}`);
           
           if (response.ok) {
             const data = await response.json();
@@ -162,7 +169,7 @@ export function SearchBox() {
             placeholder="Search transactions, blocks..."
             className="flex-grow border-none rounded-none bg-white text-black pl-4 py-2 text-sm"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={handleQueryChange}
             onKeyDown={handleKeyDown}
           />
 

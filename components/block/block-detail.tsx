@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useQuery } from "@tanstack/react-query"
 import { Loader2, Clock, Server, Hash, Layers, Package } from "lucide-react"
 import Link from "next/link"
+import { fetchWithCors, RPC_API_URL } from "@/lib/api-utils"
 
 interface BlockDetailProps {
   height: number
@@ -27,8 +28,7 @@ export function BlockDetail({ height }: BlockDetailProps) {
     queryKey: ["block", height],
     queryFn: async () => {
       // Fetch block details from the Tendermint API
-      const tendermintUrl = 'http://145.223.80.193:26657';
-      const response = await fetch(`${tendermintUrl}/block?height=${height}`);
+      const response = await fetchWithCors(`${RPC_API_URL}/block?height=${height}`);
       
       if (!response.ok) {
         throw new Error('Block not found');

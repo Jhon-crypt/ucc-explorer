@@ -1,10 +1,11 @@
 "use client";
 
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { FileText } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
+import { fetchWithCors, REST_API_URL } from "@/lib/api-utils";
 
 interface Transaction {
   hash: string;
@@ -14,35 +15,36 @@ interface Transaction {
   time: string;
 }
 
-function formatAmount(amount: string, denom: string): string {
-  // Convert from atucc (18 decimals) to UCC
-  const value = parseInt(amount) / Math.pow(10, 18);
-  return `${value.toFixed(5)} UCC`;
+// Helper function to format amounts with proper denomination
+function formatAmount(amount: string, denom: string) {
+  const value = parseInt(amount) / Math.pow(10, 18); // Assuming 18 decimals
+  return `${value.toFixed(6)} ${denom.replace('a', '')}`;
 }
 
-function formatTimeAgo(timestamp: string): string {
-  const txTime = new Date(timestamp);
-  const now = new Date();
-  const diffSeconds = Math.floor((now.getTime() - txTime.getTime()) / 1000);
-  
-  if (diffSeconds < 60) {
-    return `${diffSeconds} secs ago`;
-  }
-  const diffMinutes = Math.floor(diffSeconds / 60);
-  if (diffMinutes < 60) {
-    return `${diffMinutes} mins ago`;
-  }
-  const diffHours = Math.floor(diffMinutes / 60);
-  return `${diffHours} hours ago`;
+// Helper function to format times as "X time ago"
+function formatTimeAgo(timestamp: string) {
+  const date = new Date(timestamp);
+  return formatDistanceToNow(date, { addSuffix: true });
+}
+
+// Helper to format hash for display
+function formatHash(hash: string) {
+  if (!hash) return '';
+  return hash.length > 10 ? `${hash.slice(0, 6)}...${hash.slice(-4)}` : hash;
+}
+
+// Helper to format address for display
+function formatAddress(address: string) {
+  if (!address) return '';
+  return address.length > 15 ? `${address.slice(0, 8)}...${address.slice(-4)}` : address;
 }
 
 export function LatestTransactions() {
   const { data: transactions, isLoading } = useQuery<Transaction[]>({
     queryKey: ["latest-transactions"],
     queryFn: async () => {
-      const baseUrl = 'http://145.223.80.193:1317';
       const event = encodeURIComponent("message.action='/cosmos.bank.v1beta1.MsgSend'");
-      const response = await fetch(`${baseUrl}/cosmos/tx/v1beta1/txs?events=${event}`);
+      const response = await fetchWithCors(`${REST_API_URL}/cosmos/tx/v1beta1/txs?events=${event}`);
       const data = await response.json();
       
       return data.tx_responses.map((txResponse: any) => {
@@ -98,14 +100,14 @@ export function LatestTransactions() {
                 {/* Transaction Hash and Time */}
                 <div className="flex items-center gap-3 w-full md:w-auto">
                   <div className="rounded-md bg-background p-2">
-                    <FileText className="h-6 w-6 text-muted" />
+                    <ArrowRight className="h-6 w-6 text-muted" />
                   </div>
                   <div>
                     <Link
                       href={`/tx/${tx.hash}`}
                       className="text-primary hover:text-blue-600 font-medium"
                     >
-                      {tx.hash.slice(0, 8)}...{tx.hash.slice(-6)}
+                      {formatHash(tx.hash)}
                     </Link>
                     <div className="text-sm text-muted-foreground opacity-50">
                       {tx.time}
@@ -121,7 +123,7 @@ export function LatestTransactions() {
                       href={`/address/${tx.from}`}
                       className="text-primary hover:text-blue-600"
                     >
-                      {tx.from.slice(0, 8)}...{tx.from.slice(-6)}
+                      {formatAddress(tx.from)}
                     </Link>
                   </div>
                   <div>
@@ -130,7 +132,7 @@ export function LatestTransactions() {
                       href={`/address/${tx.to}`}
                       className="text-primary hover:text-blue-600"
                     >
-                      {tx.to.slice(0, 8)}...{tx.to.slice(-6)}
+                      {formatAddress(tx.to)}
                     </Link>
                   </div>
                 </div>

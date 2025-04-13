@@ -11,6 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
+import { fetchWithCors, REST_API_URL } from "@/lib/api-utils"
 
 interface ModuleAccount {
   name: string
@@ -22,7 +23,7 @@ export function ModuleAccounts() {
   const { data: moduleAccounts, isLoading } = useQuery<ModuleAccount[]>({
     queryKey: ["moduleAccounts"],
     queryFn: async () => {
-      const response = await fetch('http://145.223.80.193:1317/cosmos/auth/v1beta1/module_accounts')
+      const response = await fetchWithCors(`${REST_API_URL}/cosmos/auth/v1beta1/module_accounts`)
       const data = await response.json()
       return data.accounts.map((account: any) => ({
         name: account.name,
