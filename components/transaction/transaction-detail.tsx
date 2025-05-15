@@ -36,6 +36,11 @@ export function TransactionDetail({ hash }: { hash: string }) {
       }
       
       const data = await response.json();
+      
+      if (!data.tx_response) {
+        throw new Error('Transaction not found');
+      }
+      
       const txResponse = data.tx_response;
       const tx = data.tx;
       
@@ -49,14 +54,24 @@ export function TransactionDetail({ hash }: { hash: string }) {
       // Extract memo if present
       const memo = tx?.body?.memo || "";
       
-      // Transform events
+      // Transform events - handle both base64 and non-base64 encoded attributes
       const parsedEvents = txResponse.events.map((event: any) => {
         return {
           type: event.type,
-          attributes: event.attributes.map((attr: any) => ({
-            key: atob(attr.key),
-            value: attr.value ? atob(attr.value) : ""
-          }))
+          attributes: event.attributes.map((attr: any) => {
+            try {
+              // Try to decode base64 if needed
+              const key = attr.key.includes('=') ? atob(attr.key) : attr.key;
+              const value = attr.value ? (attr.value.includes('=') ? atob(attr.value) : attr.value) : "";
+              return { key, value };
+            } catch {
+              // If decoding fails, use the original values
+              return {
+                key: attr.key,
+                value: attr.value || ""
+              };
+            }
+          })
         };
       });
       
