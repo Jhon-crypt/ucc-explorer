@@ -22,6 +22,9 @@ interface SearchResult {
   gasWanted?: string;
   fee?: string;
   txCount?: number;
+  from?: string;
+  to?: string;
+  amount?: string;
 }
 
 export function SearchBox() {
@@ -33,7 +36,7 @@ export function SearchBox() {
   const [isSearching, setIsSearching] = useState(false);
   const [showResults, setShowResults] = useState(false);
 
-  const filters = ["All filters", "Transactions", "Blocks", "Validators", "Tokens"];
+  const filters = ["All filters", "Transactions", "Blocks", "Addresses"];
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -52,6 +55,61 @@ export function SearchBox() {
     setSelectedFilter(e.target.value);
   };
 
+  const searchTransactionsByAddress = async (address: string) => {
+    const events = [
+      `message.sender='${address}'`,
+      `transfer.recipient='${address}'`,
+    ].map(event => encodeURIComponent(event));
+
+    const results: SearchResult[] = [];
+
+    for (const event of events) {
+      try {
+        const response = await fetchWithCors(
+          `${REST_API_URL}/cosmos/tx/v1beta1/txs?events=${event}&order_by=ORDER_BY_DESC&limit=5`
+        );
+        
+        if (response.ok) {
+          const data = await response.json();
+          
+          if (data.tx_responses) {
+            const transactions = data.tx_responses.map((tx: any) => {
+              const msg = tx.tx.body.messages[0];
+              const msgType = msg["@type"].split(".").pop() || "Unknown";
+              
+              let from = "", to = "", amount = "";
+              if (msgType === "MsgSend") {
+                from = msg.from_address;
+                to = msg.to_address;
+                if (msg.amount && msg.amount.length > 0) {
+                  const value = parseInt(msg.amount[0].amount) / Math.pow(10, 18);
+                  amount = `${value} ${msg.amount[0].denom.replace('a', '')}`;
+                }
+              }
+
+              return {
+                type: 'transaction',
+                hash: tx.txhash,
+                height: parseInt(tx.height),
+                status: tx.code === 0 ? "Success" : "Failed",
+                time: tx.timestamp,
+                from,
+                to,
+                amount
+              };
+            });
+            
+            results.push(...transactions);
+          }
+        }
+      } catch (error) {
+        console.error("Error searching transactions by address:", error);
+      }
+    }
+
+    return results;
+  };
+
   const handleSearch = async () => {
     if (!searchQuery) return;
     
@@ -66,12 +124,12 @@ export function SearchBox() {
       if ((selectedFilter === "All filters" || selectedFilter === "Transactions") && 
           (searchQuery.length > 40)) {
         try {
-          // Try to fetch transaction by hash
           const response = await fetchWithCors(`${REST_API_URL}/cosmos/tx/v1beta1/txs/${searchQuery}`);
           
           if (response.ok) {
             const data = await response.json();
             const txResponse = data.tx_response;
+            const msg = txResponse.tx.body.messages[0];
             
             results.push({
               type: 'transaction',
@@ -81,7 +139,9 @@ export function SearchBox() {
               time: txResponse.timestamp,
               gasUsed: txResponse.gas_used,
               gasWanted: txResponse.gas_wanted,
-              fee: "0.01 UCC" // Fee info might need to be extracted from tx.auth_info.fee
+              from: msg.from_address,
+              to: msg.to_address,
+              amount: msg.amount ? `${parseInt(msg.amount[0].amount) / Math.pow(10, 18)} ${msg.amount[0].denom.replace('a', '')}` : undefined
             });
           }
         } catch (error) {
@@ -93,7 +153,6 @@ export function SearchBox() {
       if ((selectedFilter === "All filters" || selectedFilter === "Blocks") && 
           (!isNaN(parseInt(searchQuery)))) {
         try {
-          // Try to fetch block by height
           const blockHeight = parseInt(searchQuery);
           const response = await fetchWithCors(`${RPC_API_URL}/block?height=${blockHeight}`);
           
@@ -112,6 +171,13 @@ export function SearchBox() {
           console.log("Not a valid block height");
         }
       }
+
+      // Check if search query is an address
+      if ((selectedFilter === "All filters" || selectedFilter === "Addresses") && 
+          (searchQuery.startsWith('ucc'))) {
+        const addressResults = await searchTransactionsByAddress(searchQuery);
+        results.push(...addressResults);
+      }
       
       setSearchResults(results);
     } catch (error) {
@@ -128,7 +194,6 @@ export function SearchBox() {
   };
 
   const viewSearchResult = (result: SearchResult) => {
-    // Navigate to the appropriate page based on result type
     if (result.type === 'transaction' && result.hash) {
       router.push(`/tx/${result.hash}`);
     } else if (result.type === 'block') {
@@ -139,7 +204,6 @@ export function SearchBox() {
   return (
     <div className="relative w-full">
       <div className="relative flex items-center w-full bg-yellow-500 rounded-lg shadow-md p-0.5">
-        {/* Filter Dropdown */}
         <div className="bg-white relative flex items-center w-full p-1 rounded-lg">
           <div className="relative flex-shrink-0">
             <button
@@ -164,16 +228,14 @@ export function SearchBox() {
             )}
           </div>
 
-          {/* Search Bar */}
           <Input
-            placeholder="Search transactions, blocks..."
+            placeholder="Search by transaction hash, block height, or address..."
             className="flex-grow border-none rounded-none bg-white text-black pl-4 py-2 text-sm"
             value={searchQuery}
             onChange={handleQueryChange}
             onKeyDown={handleKeyDown}
           />
 
-          {/* Search Icon */}
           <button 
             className="flex items-center justify-center mr-1 p-2 bg-yellow-400 text-white rounded-md hover:bg-yellow-500"
             onClick={handleSearch}
@@ -187,7 +249,6 @@ export function SearchBox() {
         </div>
       </div>
 
-      {/* Search Results */}
       {showResults && (
         <Card className="absolute w-full mt-2 z-50 shadow-lg">
           <CardContent className="p-4">
@@ -208,13 +269,33 @@ export function SearchBox() {
                       <>
                         <div className="flex justify-between">
                           <div className="font-medium text-sm">Transaction</div>
-                          <div className="text-xs bg-green-100 text-green-800 rounded-full px-2 py-0.5">
+                          <div className={`text-xs ${
+                            result.status === "Success" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+                          } rounded-full px-2 py-0.5`}>
                             {result.status}
                           </div>
                         </div>
                         <div className="font-mono text-sm truncate max-w-[100%] mt-1">
                           {result.hash}
                         </div>
+                        {result.from && result.to && (
+                          <div className="mt-2 text-xs">
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">From:</span>
+                              <span className="font-mono">{result.from}</span>
+                            </div>
+                            <div className="flex justify-between mt-1">
+                              <span className="text-muted-foreground">To:</span>
+                              <span className="font-mono">{result.to}</span>
+                            </div>
+                            {result.amount && (
+                              <div className="flex justify-between mt-1">
+                                <span className="text-muted-foreground">Amount:</span>
+                                <span>{result.amount}</span>
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </>
                     ) : (
                       <>
@@ -231,7 +312,7 @@ export function SearchBox() {
                     )}
                     <div className="flex justify-between mt-2 text-xs text-muted-foreground">
                       <div>{result.type === 'transaction' ? `Block: ${result.height}` : ''}</div>
-                      <div>{new Date(result.time).toLocaleString()}</div>
+                      <div>{result.time ? new Date(result.time).toLocaleString() : ''}</div>
                     </div>
                   </div>
                 ))}
@@ -239,7 +320,7 @@ export function SearchBox() {
             ) : (
               <div className="text-center py-6 text-muted-foreground">
                 <p>No results found matching &quot;{searchQuery}&quot;</p>
-                <p className="text-xs mt-2">Try searching for a transaction hash or block height</p>
+                <p className="text-xs mt-2">Try searching for a transaction hash, block height, or address</p>
               </div>
             )}
             
