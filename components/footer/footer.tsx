@@ -25,13 +25,7 @@ export function Footer() {
         <div className="flex w-full md:flex-row flex-col gap-6 mb-12">
           <div className="w-full md:w-[40%] ">
             <h2 className="text-xl font-medium mb-2">Powered by Universe Chain</h2>
-            <p className="text-muted mb-4 text-sm font-light">
-              BscScan is a Block Explorer and Analytics Platform for Universe Chain.
-            </p>
-            <Button className="flex items-center space-x-2 bg-[#E9ECEF] text-black hover:bg-[#D9D9D9]">
-              <span className="text-orange-500">🦊</span>
-              <span>Add UCC Network</span>
-            </Button>
+           
           </div>
           {/* Footer Links Grid */}
           <div className="md:w-[60%] w-full">
