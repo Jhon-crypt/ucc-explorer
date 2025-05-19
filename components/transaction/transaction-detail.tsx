@@ -231,7 +231,7 @@ export function TransactionDetail({ hash }: { hash: string }) {
       </Card>
 
       {/* Events Card */}
-      <Card>
+      {/* <Card>
         <CardHeader>
           <CardTitle>Technical Details</CardTitle>
         </CardHeader>
@@ -262,7 +262,7 @@ export function TransactionDetail({ hash }: { hash: string }) {
             ))}
           </div>
         </CardContent>
-      </Card>
+      </Card> */}
     </div>
   );
 } 
