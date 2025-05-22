@@ -24,7 +24,7 @@ export function LatestTransactions() {
     queryFn: async () => {
       // Fetch latest transactions with properly formatted event parameter
       const event = encodeURIComponent("tx.height>=1");
-      const response = await fetchWithCors(`${REST_API_URL}/cosmos/tx/v1beta1/txs?events=${event}&order_by=ORDER_BY_DESC&limit=10`);
+      const response = await fetchWithCors(`${REST_API_URL}/cosmos/tx/v1beta1/txs?events=${event}&order_by=ORDER_BY_DESC&limit=5`);
       const data = await response.json();
 
       if (!data.tx_responses) {
