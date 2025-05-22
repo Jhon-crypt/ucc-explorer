@@ -33,15 +33,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="min-h-[1px] bg-[#D9D9D9] w-full "></div>
-
-
-        {/* Donations */}
-        <div className="flex justify-end items-center mt-8 text-sm text-muted-foreground">
-          <span>Donations: </span>
-          <Link href="#" className="text-blue-500 hover:text-blue-600 ml-1">0×71c765...d8976f</Link>
-          <span className="text-red-500 ml-1">❤</span>
-        </div>
+        <div className="min-h-[1px] bg-[#D9D9D9] w-full"></div>
       </div>
     </footer>
   )

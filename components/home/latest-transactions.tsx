@@ -2,17 +2,13 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
+import { Loader2, FileText, ArrowRight } from "lucide-react";
 import { fetchWithCors, REST_API_URL } from "@/lib/api-utils";
 import Link from "next/link";
 
 interface Transaction {
   hash: string;
-  height: number;
-  type: string;
   time: string;
-  status: string;
-  fee: string;
   from: string;
   to: string;
   amount: string;
@@ -22,7 +18,6 @@ export function LatestTransactions() {
   const { data: transactions, isLoading } = useQuery<Transaction[]>({
     queryKey: ["latestTransactions"],
     queryFn: async () => {
-      // Fetch latest transactions with properly formatted event parameter
       const event = encodeURIComponent("tx.height>=1");
       const response = await fetchWithCors(`${REST_API_URL}/cosmos/tx/v1beta1/txs?events=${event}&order_by=ORDER_BY_DESC&limit=5`);
       const data = await response.json();
@@ -32,42 +27,59 @@ export function LatestTransactions() {
       }
 
       return data.tx_responses.map((tx: any) => {
-        // Get the first message from the transaction
-        const msg = tx.tx.body.messages[0];
-        const msgType = msg["@type"].split(".").pop() || "Unknown";
+        let from = "", to = "", amount = "0 UCC";
         
-        // Extract fee information
-        let fee = "0 UCC";
-        if (tx.tx?.auth_info?.fee?.amount && tx.tx.auth_info.fee.amount.length > 0) {
-          const feeAmount = tx.tx.auth_info.fee.amount[0];
-          fee = `${parseInt(feeAmount.amount) / Math.pow(10, 18)} ${feeAmount.denom.replace('a', '')}`;
+        // Parse events to get the actual amount transferred
+        if (tx.logs && tx.logs.length > 0) {
+          const events = tx.logs[0].events;
+          const coinSpentEvent = events.find((event: any) => event.type === "coin_spent");
+          if (coinSpentEvent) {
+            const amountAttr = coinSpentEvent.attributes.find((attr: any) => attr.key === "amount");
+            if (amountAttr && amountAttr.value) {
+              // Remove 'atucc' from the end and convert to UCC
+              const rawAmount = amountAttr.value.replace('atucc', '');
+              const value = (BigInt(rawAmount) * BigInt(100) / BigInt(10 ** 18)) / BigInt(100);
+              amount = `${value.toString()} UCC`;
+            }
+          }
+
+          // Get sender and receiver from message events
+          const messageEvent = events.find((event: any) => event.type === "message");
+          if (messageEvent) {
+            const senderAttr = messageEvent.attributes.find((attr: any) => attr.key === "sender");
+            const recipientAttr = events.find((event: any) => event.type === "coin_received")
+              ?.attributes.find((attr: any) => attr.key === "receiver");
+            
+            if (senderAttr) from = senderAttr.value;
+            if (recipientAttr) to = recipientAttr.value;
+          }
         }
 
-        // Extract transfer details for MsgSend
-        let from = "", to = "", amount = "";
-        if (msgType === "MsgSend") {
-          from = msg.from_address;
-          to = msg.to_address;
-          if (msg.amount && msg.amount.length > 0) {
-            const value = parseInt(msg.amount[0].amount) / Math.pow(10, 18);
-            amount = `${value} ${msg.amount[0].denom.replace('a', '')}`;
-          }
+        // Calculate time difference
+        const txTime = new Date(tx.timestamp);
+        const now = new Date();
+        const diffSeconds = Math.floor((now.getTime() - txTime.getTime()) / 1000);
+        let timeAgo;
+        if (diffSeconds < 60) {
+          timeAgo = `${diffSeconds} secs ago`;
+        } else if (diffSeconds < 3600) {
+          timeAgo = `${Math.floor(diffSeconds / 60)} mins ago`;
+        } else if (diffSeconds < 86400) {
+          timeAgo = `${Math.floor(diffSeconds / 3600)} hrs ago`;
+        } else {
+          timeAgo = `${Math.floor(diffSeconds / 86400)} days ago`;
         }
 
         return {
           hash: tx.txhash,
-          height: parseInt(tx.height),
-          type: msgType,
-          time: new Date(tx.timestamp).toLocaleString(),
-          status: tx.code === 0 ? "Success" : "Failed",
-          fee,
+          time: timeAgo,
           from,
           to,
           amount
         };
       });
     },
-    refetchInterval: 5000, // Refetch every 5 seconds
+    refetchInterval: 5000,
     staleTime: 0,
     refetchOnWindowFocus: true,
   });
@@ -75,8 +87,8 @@ export function LatestTransactions() {
   if (isLoading) {
     return (
       <Card>
-        <CardHeader>
-          <CardTitle>Latest Transactions</CardTitle>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="text-2xl font-bold">Latest Transactions</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex justify-center py-8">
@@ -89,62 +101,56 @@ export function LatestTransactions() {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Latest Transactions</CardTitle>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <CardTitle className="text-2xl font-bold">Latest Transactions</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
+        <div className="space-y-6">
           {transactions?.map((tx) => (
             <Link 
               key={tx.hash} 
               href={`/tx/${tx.hash}`}
-              className="block border rounded-lg p-4 hover:bg-muted transition-colors"
+              className="grid grid-cols-[200px_1fr_200px] items-start gap-4 hover:bg-muted p-2 rounded-lg cursor-pointer"
             >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <div>
-                    <div className="text-sm text-muted-foreground">Tx Hash</div>
-                    <div className="font-mono text-sm truncate">{tx.hash}</div>
+              <div className="flex items-center gap-3">
+                <FileText className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                <div>
+                  <div className="font-mono text-sm text-blue-500">
+                    {tx.hash.slice(0, 10)}...
                   </div>
-                  <div>
-                    <div className="text-sm text-muted-foreground">Type</div>
-                    <div className="text-sm">{tx.type}</div>
-                  </div>
-                  <div>
-                    <div className="text-sm text-muted-foreground">Time</div>
-                    <div className="text-sm">{tx.time}</div>
+                  <div className="text-sm text-muted-foreground">
+                    {tx.time}
                   </div>
                 </div>
-                <div className="space-y-2">
-                  {tx.from && tx.to && (
-                    <>
-                      <div>
-                        <div className="text-sm text-muted-foreground">From</div>
-                        <div className="font-mono text-sm truncate">{tx.from}</div>
-                      </div>
-                      <div>
-                        <div className="text-sm text-muted-foreground">To</div>
-                        <div className="font-mono text-sm truncate">{tx.to}</div>
-                      </div>
-                      <div>
-                        <div className="text-sm text-muted-foreground">Amount</div>
-                        <div className="text-sm">{tx.amount}</div>
-                      </div>
-                    </>
-                  )}
-                  <div>
-                    <div className="text-sm text-muted-foreground">Status</div>
-                    <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      tx.status === "Success" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-                    }`}>
-                      {tx.status}
-                    </div>
-                  </div>
+              </div>
+              
+              <div className="flex flex-col gap-2">
+                <div className="grid grid-cols-[50px_1fr] items-center text-sm">
+                  <span className="text-muted-foreground">From</span>
+                  <span className="font-mono text-blue-500">{tx.from.slice(0, 8)}...{tx.from.slice(-8)}</span>
+                </div>
+                <div className="grid grid-cols-[50px_1fr] items-center text-sm">
+                  <span className="text-muted-foreground">To</span>
+                  <span className="font-mono text-blue-500">{tx.to.slice(0, 8)}...{tx.to.slice(-8)}</span>
+                </div>
+              </div>
+
+              <div className="text-right">
+                <div className="text-sm font-medium">
+                  {tx.amount}
                 </div>
               </div>
             </Link>
           ))}
         </div>
+        
+        <Link 
+          href="/transactions" 
+          className="flex items-center justify-center gap-2 mt-6 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          VIEW ALL TRANSACTIONS
+          <ArrowRight className="h-4 w-4" />
+        </Link>
       </CardContent>
     </Card>
   );

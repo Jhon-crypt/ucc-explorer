@@ -33,8 +33,14 @@ export function ChainDetails() {
     queryFn: async () => {
       const response = await fetchWithCors(`${REST_API_URL}/cosmos/base/tendermint/v1beta1/node_info`)
       const data = await response.json()
+      
+      // Format network name based on network ID
+      const networkId = data.default_node_info.network
+      const isTestnet = networkId.includes('testnet') || networkId.includes('9000')
+      const networkName = isTestnet ? 'Universe Chain Testnet' : 'Universe Chain Mainnet'
+      
       return {
-        network: data.default_node_info.network,
+        network: networkName,
         chainId: data.default_node_info.network,
         version: data.application_version.version,
         moniker: data.default_node_info.moniker,

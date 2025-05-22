@@ -3,32 +3,12 @@
 import { useQuery } from "@tanstack/react-query"
 import { StatsCard } from "./stats-card"
 import { 
-  Shield,
   Network,
   BarChart3
 } from "lucide-react"
 import { fetchWithCors, REST_API_URL, RPC_API_URL } from "@/lib/api-utils"
 
 export function ChainStats() {
-  // Fetch validator data
-  const { data: validatorData } = useQuery({
-    queryKey: ["validators"],
-    queryFn: async () => {
-      const response = await fetchWithCors(`${REST_API_URL}/cosmos/staking/v1beta1/validators`);
-      const data = await response.json();
-      // Get the first validator
-      const validator = data.validators[0];
-      return {
-        moniker: validator.description.moniker,
-        status: validator.status === "BOND_STATUS_BONDED" ? "BONDED" : validator.status,
-        commission: (parseFloat(validator.commission.commission_rates.rate) * 100).toFixed(0) + "%"
-      };
-    },
-    refetchInterval: 1000,
-    staleTime: 0,
-    refetchOnWindowFocus: true,
-  });
-
   // Fetch status data
   const { data: statusData } = useQuery({
     queryKey: ["status"],
@@ -78,22 +58,7 @@ export function ChainStats() {
   });
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-4">
-      <StatsCard
-        title="VALIDATOR STATUS"
-        icon={Shield}
-        items={[
-          {
-            label: validatorData?.moniker || "universe-testnet-node",
-            value: validatorData?.status || "BONDED"
-          },
-          {
-            label: "Commission Rate",
-            value: validatorData?.commission || "10%"
-          }
-        ]}
-      />
-      
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-4">
       <StatsCard
         title="NETWORK STATS"
         icon={Network}
